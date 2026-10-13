@@ -16,7 +16,7 @@ th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);vert
 .bar .t{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}.bar .f{height:100%;background:var(--accent2)}
 .bar .n{width:28px;text-align:right;color:var(--sub)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
 .err{color:#ff8b8b;margin-top:8px}.hidden{display:none}.tag{font-size:11px;color:var(--sub);border:1px solid var(--border);border-radius:10px;padding:1px 7px;margin-left:6px}
-.note{color:var(--sub);font-size:12px}.scroll{overflow-x:auto}
+.num{background:none;border:0;border-bottom:1px dashed var(--accent2);color:inherit;font:inherit;padding:0 2px;cursor:pointer;min-width:24px}.num:hover{background:var(--border)}.filterbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.filterbar:empty{display:none}.note{color:var(--sub);font-size:12px}.scroll{overflow-x:auto}
 </style></head><body><div class="wrap">
 <h1>Your Next Chapter · L&amp;D admin</h1><div class="sub">Batch links and group view. Results are for development conversations, not performance evaluation.</div>
 
@@ -29,7 +29,7 @@ th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);vert
   <div class="card"><div class="row" style="justify-content:space-between"><h2 id="dtitle" style="margin:0"></h2><div class="row"><button class="sec" id="refresh">Refresh</button><button id="csv">Download CSV</button></div></div><div class="note" id="dnote"></div></div>
   <div class="card"><h2>Learning plan view</h2><div class="note">Per growth direction: how many people, who they are by area, what support they asked for, and the suggested way to deliver the learning. Use it to plan roadmaps and materials. Small numbers are indicative only.</div><div class="scroll"><table><thead><tr><th>Growth direction</th><th>People</th><th>Areas of work</th><th>Support asked</th><th>How they learn best</th><th>Suggested format</th></tr></thead><tbody id="plan"></tbody></table></div></div>
   <div class="grid" id="charts"></div>
-  <div class="card"><h2>Respondents</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Growth direction</th><th>Thinking</th><th>Stated focus</th><th>Area of work</th><th>Support</th></tr></thead><tbody id="people"></tbody></table></div></div>
+  <div class="card" id="whoCard"><h2>Respondents</h2><div class="filterbar" id="filterBar"></div><div class="scroll"><table><thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Growth direction</th><th>Also close to</th><th>Thinking</th><th>Stated focus</th><th>Area of work</th><th>Support</th></tr></thead><tbody id="people"></tbody></table></div></div>
  </div>
 </div></div>
 <script>
@@ -49,24 +49,33 @@ function drawBatches(list){const tb=$('batches');tb.replaceChildren();
    const t=el('button',b.closed?'Reopen':'Close','sec');t.onclick=async()=>{await api('/api/admin/batches/'+b.id+'/'+(b.closed?'open':'close'),{method:'POST'});enter()};td.append(c,t)}
   tr.append(td);tb.append(tr)})}
 $('create').onclick=async()=>{$('createErr').textContent='';try{const n=$('bname').value.trim();if(!n)throw Error('Give the batch a name.');await api('/api/admin/batches',{method:'POST',body:JSON.stringify({name:n})});$('bname').value='';enter()}catch(e){$('createErr').textContent=e.message}};
-function tally(list,fn){const m={};list.forEach(r=>{const k=fn(r)||'Not answered';m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
-function chart(title,data,total){const c=el('div',null,'card');c.append(el('h2',title));data.forEach(([k,n])=>{const b=el('div',null,'bar');const t=el('div',null,'t'),f=el('div',null,'f');f.style.width=(total?n/total*100:0)+'%';t.append(f);b.append(el('div',k,'l'),t,el('div',n,'n'));c.append(b)});return c}
-async function show(b){CUR=b;$('detail').classList.remove('hidden');$('dtitle').textContent=b.name;$('dnote').textContent=b.id==='general'?'Responses submitted without a batch link.':'Link: '+link(b.id);
- const d=await api('/api/admin/responses?batch='+encodeURIComponent(b.id));const R=d.responses;const ch=$('charts');ch.replaceChildren();
- if(!R.length){ch.append(el('div','No responses yet.','card'));$('people').replaceChildren();return}
- ch.append(chart('Growth direction (inferred)',tally(R,r=>r.summary.pathLabel),R.length),chart('Career pull',tally(R,r=>r.summary.careerLabel),R.length),
-  chart('Thinking style (natural lean)',tally(R,r=>r.summary.thinkLabel),R.length),chart('Learning style',tally(R,r=>r.summary.learnLabel),R.length),
-  chart('Stated focus (up to 2 each)',tally(R.flatMap(r=>(r.summary.statedLabels||['Not sure yet']).map(x=>({summary:{x}}))),r=>r.summary.x),R.length),
-  chart('Support wanted',tally(R,r=>r.summary.supportLabel),R.length),chart('Area of work',tally(R,r=>r.summary.functionLabel),R.length),chart('Role',tally(R,r=>r.role),R.length),chart('Department',tally(R,r=>r.department),R.length));
- const tb=$('people');tb.replaceChildren();R.forEach(r=>{const tr=el('tr');tr.append(el('td',r.name),el('td',r.department||''),el('td',r.role||''),el('td',r.summary.pathLabel||''),el('td',r.summary.thinkLabel||''),el('td',(r.summary.statedLabels||[]).join(' + ')),el('td',r.summary.functionLabel||''),el('td',r.summary.supportLabel||''));tb.append(tr)});drawPlan(R)}
+const NA='Not answered';
+const vals=(r,fn)=>{let v=fn(r);v=Array.isArray(v)?v:[v];v=v.filter(x=>x!=null&&String(x).trim()!=='');return v.length?v.map(String):[NA]};
+function tally(list,fn){const m={};list.forEach(r=>vals(r,fn).forEach(k=>{m[k]=(m[k]||0)+1}));return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+let ALL=[],FILT=null;
+function numBtn(n,title,key,fn){const b=el('button',n,'num');b.title='Show who';b.onclick=()=>{FILT={title,key,fn};drawPeople();$('whoCard').scrollIntoView({behavior:'smooth',block:'start'})};return b}
+function chart(title,fn,total){const c=el('div',null,'card');c.append(el('h2',title));tally(ALL,fn).forEach(([k,n])=>{const b=el('div',null,'bar');const t=el('div',null,'t'),f=el('div',null,'f');f.style.width=(total?n/total*100:0)+'%';t.append(f);b.append(el('div',k,'l'),t,numBtn(n,title,k,fn));c.append(b)});return c}
+function drawPeople(){const tb=$('people');tb.replaceChildren();const rows=FILT?ALL.filter(r=>vals(r,FILT.fn).includes(FILT.key)):ALL;
+ const fb=$('filterBar');fb.replaceChildren();
+ if(FILT){const t=el('span',rows.length+' of '+ALL.length+' respondents: '+FILT.title+' = '+FILT.key);const x=el('button','Show everyone','sec');x.onclick=()=>{FILT=null;drawPeople()};fb.append(t,x)}
+ rows.forEach(r=>{const tr=el('tr');tr.append(el('td',r.name),el('td',r.department||''),el('td',r.role||''),el('td',r.summary.pathLabel||''),el('td',r.summary.altPathLabel||''),el('td',r.summary.thinkLabel||''),el('td',(r.summary.statedLabels||[]).join(' + ')),el('td',r.summary.functionLabel||''),el('td',r.summary.supportLabel||''));tb.append(tr)})}
+async function show(b){CUR=b;FILT=null;$('detail').classList.remove('hidden');$('dtitle').textContent=b.name;$('dnote').textContent=b.id==='general'?'Responses submitted without a batch link.':'Link: '+link(b.id);
+ const d=await api('/api/admin/responses?batch='+encodeURIComponent(b.id));ALL=d.responses;const R=ALL;const ch=$('charts');ch.replaceChildren();
+ if(!R.length){ch.append(el('div','No responses yet.','card'));$('people').replaceChildren();$('plan').replaceChildren();$('filterBar').replaceChildren();return}
+ const N=R.length;
+ ch.append(chart('Growth direction (inferred)',r=>r.summary.pathLabel,N),chart('Career pull',r=>r.summary.careerLabel,N),
+  chart('Thinking style (natural lean)',r=>r.summary.thinkLabel,N),chart('Learning style',r=>r.summary.learnLabel,N),
+  chart('Stated focus (up to 2 each)',r=>r.summary.statedLabels||['Not sure yet'],N),
+  chart('Support wanted',r=>r.summary.supportLabel,N),chart('Area of work',r=>r.summary.functionLabel,N),chart('Role',r=>r.role,N),chart('Department',r=>r.department,N));
+ drawPeople();drawPlan(R)}
 const FORMAT={Structured:'Cohort programme or certification, with milestones',Experiential:'Stretch assignments with a short debrief',Social:'Mentoring and shadowing',"Self-directed":'Curated resource list with monthly check-ins'};
 function topN(list,n){return tally(list,x=>x).slice(0,n).filter(x=>x[0]!=='Not answered').map(x=>x[0]+' ('+x[1]+')').join(', ')}
-function drawPlan(R){const tb=$('plan');tb.replaceChildren();const g={};R.forEach(r=>{const k=r.summary.pathLabel||'Not answered';(g[k]=g[k]||[]).push(r.summary)});
+function drawPlan(R){const tb=$('plan');tb.replaceChildren();const g={};R.forEach(r=>{const k=r.summary.pathLabel||NA;(g[k]=g[k]||[]).push(r.summary)});
  Object.entries(g).sort((a,b)=>b[1].length-a[1].length).forEach(([k,L])=>{const tr=el('tr');const l=tally(L,s=>s.learnLabel)[0];
-  tr.append(el('td',k),el('td',L.length),el('td',topN(L.map(s=>s.functionLabel),3)||'-'),el('td',topN(L.map(s=>s.supportLabel),2)||'-'),el('td',topN(L.map(s=>s.learnLabel),2)||'-'),el('td',l?FORMAT[l[0]]||'':''));tb.append(tr)})}
+  const pf=r=>r.summary.pathLabel;const cn=el('td');cn.append(numBtn(L.length,'Growth direction',k==='Not answered'?NA:k,pf));tr.append(el('td',k),cn,el('td',topN(L.map(s=>s.functionLabel),3)||'-'),el('td',topN(L.map(s=>s.supportLabel),2)||'-'),el('td',topN(L.map(s=>s.learnLabel),2)||'-'),el('td',l?FORMAT[l[0]]||'':''));tb.append(tr)})}
 $('refresh').onclick=()=>CUR&&show(CUR);
 $('csv').onclick=async()=>{const d=await api('/api/admin/responses?batch='+encodeURIComponent(CUR.id));const cell=v=>{let t=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(t))t="'"+t;return '"'+t.replace(/"/g,'""')+'"'};
- const head=['Name','Company','Department','Role','Area of work','Career pull','Growth direction','Stated focus','Thinking style','Learning style','Drive','Why','Environment','Support wanted','Submitted'];
- const rows=d.responses.map(r=>{const s=r.summary||{};return [r.name,r.company,r.department,r.role,s.functionLabel,s.careerLabel,s.pathLabel,(s.statedLabels||[]).join(' + '),s.thinkLabel,s.learnLabel,s.energiseLabel,s.whyLabel,s.envLabel,s.supportLabel,r.created_at]});
+ const head=['Name','Company','Department','Role','Area of work','Career pull','Growth direction','Also close to','Stated focus','Thinking style','Learning style','Drive','Why','Environment','Support wanted','Submitted'];
+ const rows=d.responses.map(r=>{const s=r.summary||{};return [r.name,r.company,r.department,r.role,s.functionLabel,s.careerLabel,s.pathLabel,s.altPathLabel,(s.statedLabels||[]).join(' + '),s.thinkLabel,s.learnLabel,s.energiseLabel,s.whyLabel,s.envLabel,s.supportLabel,r.created_at]});
  const text='\ufeff'+[head,...rows].map(r=>r.map(cell).join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.download='your-next-chapter.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
 </script></body></html>

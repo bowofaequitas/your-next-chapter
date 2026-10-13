@@ -292,9 +292,9 @@ const PATHS = {
   route:"Mostly through assignments: internal trainer or mentor for new joiners and colleagues, working alongside L&D.",
   dev:["Facilitation and training delivery","Coaching conversations (for example the GROW model) and giving feedback","Learning design basics: turning a process into a short, usable session","Presentation and communication skills"],
   stretch:"Run one short internal session on something you know well, then collect feedback and improve it."},
- PathTeamLead:{parent:"CarPeopleLeader",lbl:"People Leader (HOS / HOD track)",theme:"Leading people",styles:['C','V'],
+ PathTeamLead:{parent:"CarPeopleLeader",lbl:"People Leader",theme:"Leading people",styles:['C','V'],
   d:"You'd grow by taking responsibility for people and how they perform.",
-  route:"This is the formal route: Executive, then Head of Section (HOS), then Head of Department (HOD). Leading a small crew or project first is a good way to test it.",
+  route:"Leading can start at any level: a small crew, a project or a mentoring role. The formal management route is Executive, then Head of Section (HOS), then Head of Department (HOD).",
   dev:["First-time leader programme","Delegation and setting clear expectations","Performance and feedback conversations","Handling conflict and building team trust"],
   stretch:"Lead a small team or project crew for a set period, with a mentor to debrief with."},
  PathProgrammeLead:{parent:"CarPeopleLeader",lbl:"Project & Delivery Lead",theme:"Running projects from plan to delivery",styles:['E','A'],
@@ -683,6 +683,7 @@ function computeProfile(){
   const envKey = pickTop(Object.keys(ENV)) || 'EnvAutonomous';
   const ts = thinkScores(), tsP = ts[0], tsS = ts[1], thinkBlend = (tsP.pct - tsS.pct) <= 10;
   const pathKey = pickPath(carKey), PATH = PATHS[pathKey];
+  const sibs = Object.keys(PATHS).filter(k=>PATHS[k].parent===carKey && k!==pathKey), altKey = sibs.length && (tally[sibs[0]]||0)>0 && (tally[sibs[0]]||0)===(tally[pathKey]||0) ? sibs[0] : null;
   const carTot = Object.keys(CAR).reduce((s,k)=>s+(tally[k]||0),0) || 1;
   const carRows = Object.keys(CAR).map(k=>({k, n:tally[k]||0, pct:Math.round((tally[k]||0)/carTot*100)}));
   const carOrdered = [carRows.find(x=>x.k===carKey)].concat(carRows.filter(x=>x.k!==carKey).sort((x,y)=>y.n-x.n));
@@ -697,7 +698,7 @@ function computeProfile(){
   else statedNote = `You said you'd like to focus on ${statedNames}, which is different from where your choices leaned. Worth a conversation, not a conclusion.`;
   const shortKey = (k,p)=>k.replace(p,'').replace('SelfDirected','Self-directed');
   const thinkLabel = thinkBlend ? tsP.lbl+' + '+tsS.lbl : tsP.lbl;
-  const P = {energiseKey, whyKey, carKey, learnKey, envKey, ts, tsP, tsS, thinkBlend, pathKey, PATH, carOrdered, carSec, stated, lc, statedNote,
+  const P = {energiseKey, whyKey, carKey, learnKey, envKey, ts, tsP, tsS, thinkBlend, pathKey, PATH, altKey, carOrdered, carSec, stated, lc, statedNote,
     extraPath: stated.find(k=>k!==pathKey), thinkLabel};
   lastSummary = {
     careerKey:carKey, careerLabel:CAR[carKey].lbl, pathKey:pathKey, pathLabel:PATH.lbl,
@@ -706,7 +707,7 @@ function computeProfile(){
     thinkScores: ts.map(x=>({k:x.k,n:x.n,av:x.av})),
     learnKey:learnKey, learnLabel:shortKey(learnKey,'Learn'), envKey:envKey, envLabel:shortKey(envKey,'Env'),
     energiseKey:energiseKey, energiseLabel:LABEL[energiseKey], whyKey:whyKey, whyLabel:LABEL[whyKey],
-    supportKey:supportKey, supportLabel:SUPPORT[supportKey], functionKey:funcKey, functionLabel:funcKey?FUNCS[funcKey].lbl:'', roadmapPath:pathKey
+    supportKey:supportKey, supportLabel:SUPPORT[supportKey], functionKey:funcKey, functionLabel:funcKey?FUNCS[funcKey].lbl:'', roadmapPath:pathKey, altPathLabel: altKey?PATHS[altKey].lbl:''
   };
   return P;
 }
@@ -748,6 +749,7 @@ function renderResults(){
      <p class="note">Based on your career-related choices in the game.</p>
      <p class="callout"><b>Closest growth direction: ${PATH.lbl}.</b> ${PATH.d}</p>
      <p class="note"><b>How this can happen at Aafiyat.</b> ${PATH.route}</p>
+     ${P.altKey ? `<p class="callout alt"><b>Also close: ${PATHS[P.altKey].lbl}.</b> Your choices were nearly even between the two directions of this pull. ${PATHS[P.altKey].d} You can explore both before settling.</p>` : ''}
      <p class="note">${P.statedNote}</p>`)}
    ${panel('bulb','How you think',`
      <p>${P.thinkBlend ? `A blend of <b>${P.tsP.lbl}</b> and <b>${P.tsS.lbl}</b>.` : `<b>${P.tsP.lbl}</b>, with a supporting lean toward ${P.tsS.lbl}.`} ${THINK[P.tsP.k].d}${P.thinkBlend ? ' ' + THINK[P.tsS.k].d : ''}</p>
