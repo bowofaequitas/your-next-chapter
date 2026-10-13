@@ -23,7 +23,7 @@ body{font-family:var(--body);font-weight:500;color:var(--ink);background:linear-
 .center{text-align:center}
 .logo{font-family:var(--px);font-weight:400;text-align:center;line-height:1.35;margin:4px 0 14px;font-size:clamp(20px,6.4vw,32px);color:var(--ink)}
 .logo span{display:block;text-shadow:3px 3px 0 var(--sun)}.logo span:nth-child(2){color:var(--tomato);text-shadow:3px 3px 0 var(--ink)}.logo span:nth-child(3){text-shadow:3px 3px 0 var(--grape);color:var(--ink)}
-.crew{display:flex;justify-content:center;gap:6px;margin:6px 0 16px;flex-wrap:wrap}
+.crew{display:flex;justify-content:center;gap:10px;margin:6px 0 16px;flex-wrap:wrap}
 .crew-m{animation:bob 1.1s steps(2) infinite}.crew-m svg{display:block}
 @keyframes bob{50%{transform:translateY(-6px)}}
 .lead{text-align:center;font-size:18px;margin-bottom:14px}
@@ -99,6 +99,17 @@ select.field{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 .admin{margin-top:12px;font-size:14px;background:#fff;border:3px solid var(--ink);padding:10px}.hidden{display:none}
 .bar-row{margin:4px 0}.bar-lbl{display:flex;justify-content:space-between;font-size:13px}.bar-track{height:8px;background:#e4def5}.bar-fill{height:100%;background:var(--grape)}
 .walking{display:flex;justify-content:center;animation:bob .6s steps(2) infinite;margin-bottom:8px}
+ol.road{list-style:none;counter-reset:r;margin:6px 0 10px}
+ol.road li{position:relative;padding-left:34px;margin-bottom:12px;counter-increment:r}
+ol.road li::before{content:counter(r);position:absolute;left:0;top:0;width:24px;height:24px;display:grid;place-items:center;font-family:var(--px);font-size:11px;background:var(--grape);color:#fff;border:3px solid var(--ink)}
+.rph{font-weight:800;color:var(--grape);margin-bottom:2px}
+.cast{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cast-c{position:relative;background:var(--c);border:3px solid var(--ink);padding:10px 8px;text-align:center;font-size:14px;line-height:1.3}
+.cast-c p{margin:4px 0 0!important}.cast-c.me{box-shadow:4px 4px 0 var(--ink)}
+.cast-s{display:flex;justify-content:center}.cast-s svg{display:block}
+.cast-n{font-family:var(--px);font-size:10px;margin-top:6px}
+.you{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--sun);border:2px solid var(--ink);font-family:var(--px);font-size:8px;padding:3px 5px;white-space:nowrap}
+@media (max-width:360px){.cast{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.cloud{transform:none}.confetti{display:none}}
 @media print{body{background:#fff!important}.city,.clouds,.confetti,.noprint{display:none!important}.card,.panel,.hero{box-shadow:none}.panel,.hero{break-inside:avoid}}
 @media (max-width:400px){.mrow{grid-template-columns:minmax(0,1fr) auto}.mrow .mt{display:none}.opt{font-size:16px}}
@@ -235,7 +246,7 @@ const ASPIRE = {t:"Quest complete! Two last questions, about the real you.",
 const SUPPORT = {mentor:"A mentor or someone who's done it before",
  project:"A stretch project or assignment",
  training:"Formal training or a certification",
- clarity:"Clarity on what my next steps could be"};
+ time:"Protected time and manager backing to learn at work"};
 const DRIVER_PHRASE = {Structure:"clear structure and expectations",Achievement:"getting things done and delivering",
  Innovation:"finding smarter or better ways to work",Mastery:"going deep and building real expertise",
  Collaboration:"working closely with people",Autonomy:"having ownership over how you work",Impact:"seeing tangible, meaningful impact",
@@ -348,6 +359,112 @@ const THINK = {
 const THINK_AVAIL = {};
 Object.keys(THINK).forEach(k=>THINK_AVAIL[THINK[k].tag]=0);
 Q.forEach(q=>q.o.forEach(o=>{ if(typeof o[2]==='string'){ const t=THINK[o[2]].tag; o[1].push(t); THINK_AVAIL[t]++; } }));
+// ---- v16.1: roadmap, function context, learning tips, other characters ----
+const FUNCS = {
+ sales:{lbl:"Sales & Digital Sales", d:["DIGITAL SALES (ADMIN)","DIGITAL SALES (AFFILIATE)","DIGITAL SALES (BUSINESS DEVELOPMENT)","DIGITAL SALES (COMMERCIAL SALES)","DIGITAL SALES (MARKETING & CREATIVE)","DIGITAL SALES (TECH & SYSTEM INTEGRATION)","DIGITAL SALES 1 (DS1)","DIGITAL SALES 2 (DS2)","DIGITAL SALES 3 (DS3)","SALES","SALES CHANNEL - AGENT SALES","STORE BUSINESS MANAGEMENT (B2B)"],
+  CarSpecialist:"Become the expert on your products, customers and conversion numbers, then write the playbook others follow.",
+  CarPeopleLeader:"Lead one campaign push or a small squad for a set period, and coach a newer colleague through the pipeline.",
+  CarCrossFunctional:"Be the link between sales, marketing and supply on one campaign, so what's promised matches what can be delivered.",
+  CarBuilder:"Automate a sales report or lead follow-up, or fix a step where orders slow down between lead and delivery."},
+ fin:{lbl:"Finance & Account", d:["ACCOUNT","FINANCE"],
+  CarSpecialist:"Go deep on one area such as month-end close, reconciliation or costing, and document it so anyone can follow it.",
+  CarPeopleLeader:"Lead the month-end or audit-prep crew for one cycle, with clear deadlines and checks.",
+  CarCrossFunctional:"Be the finance contact for one other department and translate budgets and numbers both ways.",
+  CarBuilder:"Automate a repetitive reconciliation or report and measure the hours it saves."},
+ ops:{lbl:"Supply Chain & Operations", d:["SUPPLY CHAIN - FULFILMENT","SUPPLY CHAIN - PRODUCTION","SUPPLY CHAIN - QUALITY CONTROL","SUPPLY CHAIN - WAREHOUSE & LOGISTIC","PLANNING & PROCUREMENT","OPERATIONAL SUPPORT & INFRASTRUCTURE"],
+  CarSpecialist:"Own one process end to end (warehouse flow, QC checks or the procurement cycle) and write the reference guide.",
+  CarPeopleLeader:"Lead a shift, a rollout or an improvement project with a clear target such as lead time.",
+  CarCrossFunctional:"Be the link between production, warehouse and sales so plans and actual stock match.",
+  CarBuilder:"Run a Lean or Kaizen improvement, or digitise a paper-based step, and report the before and after."},
+ prod:{lbl:"Product & Innovation", d:["OLIVE HUB INNOVATION, PRODUCT & QUALITY EXCELLENCE","PRODUCT COORDINATION & STRATEGIC SUPPORT"],
+  CarSpecialist:"Become the expert on one product line or quality standard, the one people check with before changes.",
+  CarPeopleLeader:"Lead a product launch or trial from plan to go-live with a clear timeline.",
+  CarCrossFunctional:"Coordinate product, sales and supply chain on one live product issue.",
+  CarBuilder:"Prototype one improvement or new idea, test it small and show the result."},
+ hc:{lbl:"People & Culture", d:["HUMAN CAPITAL (OPERATIONS & CULTURE ADOPTION)"],
+  CarSpecialist:"Go deep on one HR process (onboarding, policy or payroll rules) and be the reference for it.",
+  CarPeopleLeader:"Lead one people initiative end to end, such as an onboarding batch or an engagement activity.",
+  CarCrossFunctional:"Be the HC partner to one department and learn what its people really need.",
+  CarBuilder:"Streamline an HR process with a simple automated form or tracker."},
+ tech:{lbl:"Transformation & Technology", d:["TRANSFORMATION - PEOPLE STRATEGY","TRANSFORMATION - TECHNOLOGY ENABLEMENT"],
+  CarSpecialist:"Deepen one system or tool area until other teams come to you about it.",
+  CarPeopleLeader:"Lead a rollout (a system or process change) with a timeline and a small group of champions.",
+  CarCrossFunctional:"Be the bridge between business users and the tech side, turning needs into clear requirements.",
+  CarBuilder:"Build or automate something small that people really use, and track adoption."},
+ plan:{lbl:"Planning & Performance", d:["BUSINESS PLANNING & PERFORMANCE","PERFORMANCE & CUSTOMER MANAGEMENT"],
+  CarSpecialist:"Become the expert on one set of metrics or reports, and make them trustworthy.",
+  CarPeopleLeader:"Lead the planning or review cycle for a section and coordinate inputs from several teams.",
+  CarCrossFunctional:"Link departmental targets to the company plan, and help each side see the other's view.",
+  CarBuilder:"Build a dashboard or reporting flow that replaces a manual one."},
+ legal:{lbl:"Legal & Corporate Affairs", d:["LEGAL","CORPORATE AFFAIRS & STAKEHOLDER ENGAGEMENT (CASE)"],
+  CarSpecialist:"Go deep on one area (contracts, compliance or stakeholder relations) and build a reusable guide.",
+  CarPeopleLeader:"Lead one engagement or compliance activity with a timeline and a small team.",
+  CarCrossFunctional:"Be the go-between for legal or CASE and operations, so risks are spotted early.",
+  CarBuilder:"Create a template or tracker that makes contract or request handling faster."}
+};
+function funcFromDept(d){ d=(d||'').trim().toUpperCase(); return Object.keys(FUNCS).find(k=>FUNCS[k].d.includes(d))||null; }
+
+const ROADMAP = {
+ PathTechSpecialist:[
+  ["Learn the fundamentals","Pick one certification or advanced course in your area and map the core processes you touch.","Write down how your key process really works, step by step."],
+  ["Practise on real work","Take on harder cases in your area and learn basic troubleshooting and data analysis.","Be the person who solves the tricky cases for your team for a month."],
+  ["Prove it","Learn to document and teach what you know, so it spreads beyond you.","Publish a reference guide and run a short walkthrough for colleagues."]],
+ PathCoachSME:[
+  ["Learn the fundamentals","Facilitation basics, plus the GROW coaching model for feedback conversations.","Sit in on two training sessions and note what makes them work."],
+  ["Practise on real work","Learn to turn a process into a short, usable session (15 to 30 minutes).","Buddy a new joiner and coach them through one process."],
+  ["Prove it","Presentation and delivery skills, and how to collect feedback.","Run a session on something you know well, gather feedback and improve it."]],
+ PathTeamLead:[
+  ["Learn the fundamentals","First-time leader basics: delegation and setting clear expectations.","Shadow your HOS or HOD for a week and note how they run meetings and decisions."],
+  ["Practise on real work","Feedback and performance conversations; handling conflict.","Lead a small crew or project with a mentor to debrief with."],
+  ["Prove it","Building team trust and managing performance over time.","Lead for a full cycle, then review with your manager what worked and what didn't."]],
+ PathProgrammeLead:[
+  ["Learn the fundamentals","Project management basics: scope, schedule, risk and budget tracking.","Break one real piece of work into a plan with owners and dates."],
+  ["Practise on real work","Stakeholder updates and setting expectations early.","Run a small project end to end and send weekly progress updates."],
+  ["Prove it","Negotiating priorities under deadline pressure; reporting to management.","Plan and run a cross-department project, and present the result."]],
+ PathBizPartner:[
+  ["Learn the fundamentals","Business acumen: how two other departments make money and what they worry about.","Spend half a day with a partner department and ask what slows them down."],
+  ["Practise on real work","Stakeholder management; gathering requirements and translating between teams.","Join one cross-department working group as an active member."],
+  ["Prove it","Influencing without authority; presenting and negotiating with senior people.","Be the named point of contact between two departments on a live project."]],
+ PathStrategist:[
+  ["Learn the fundamentals","KPI design and business analysis basics; reading the company plan and numbers.","Pick one KPI in your area and trace what really drives it."],
+  ["Practise on real work","Data storytelling: turning numbers into a clear recommendation.","Prepare a one-page analysis for your HOS or HOD on a real question."],
+  ["Prove it","Scenario planning and decision frameworks; presenting to management.","Write a short recommendation paper backed by data and present it."]],
+ PathDigitalBuilder:[
+  ["Learn the fundamentals","Process automation or low-code basics, and practical AI tools for daily work.","List five repetitive tasks in your week and pick the best one to automate."],
+  ["Practise on real work","Systems analysis: how business processes map onto systems.","Build a small proof of concept and let two colleagues test it."],
+  ["Prove it","Running small experiments and measuring results.","Automate one task end to end and report the time it saves."]],
+ PathChangeLead:[
+  ["Learn the fundamentals","Process improvement basics (Lean or Kaizen) and how to map a process.","Map one process you know and mark where time or effort is wasted."],
+  ["Practise on real work","Change management: bringing people along, not only the process; running workshops.","Facilitate a short improvement workshop with the people who do the work."],
+  ["Prove it","Measuring and reporting benefits.","Lead one improvement from first idea to a measured result."]]
+};
+const PHASES = ["Months 1 to 3","Months 4 to 6","Months 7 to 12"];
+
+const LEARN_TIPS = {
+ LearnStructured:["Pick one programme or certification and book the dates upfront.","Break it into milestones and tick them off.","Ask your manager to review each finished milestone."],
+ LearnExperiential:["Choose a real task to practise on in the first week.","After each try, write two lines: what worked and what to change.","Ask someone for a short debrief after each attempt."],
+ LearnSocial:["Find someone already doing the role and set a monthly catch-up.","Shadow them on one real task.","Teach what you learned to a colleague to lock it in."],
+ LearnSelfDirected:["Choose two or three good resources only, so you don't drown.","Set your own weekly slot, even 30 minutes.","Check in with your manager once a month on progress."]
+};
+const SUPPORT_HOW = {
+ mentor:"Ask L&D to help match you with someone already in your target role.",
+ project:"Agree a stretch assignment with your HOD, with L&D helping to set the goal and the debrief.",
+ training:"Ask L&D to suggest suitable programmes or certifications for your direction.",
+ time:"Agree protected learning time with your manager, for example two hours a week."
+};
+// What's the blind spot of each thinking style, and one habit that covers it
+const EDGE2 = {
+ V:["Good ideas can stay ideas.","Attach a first milestone to each idea, and ask a follow-through partner to check in."],
+ E:["Moving fast can skip the check.","Before you start, spend five minutes on the assumptions and the data. It can save a rework."],
+ A:["Waiting for full information can slow decisions.","Practise deciding with about 70% of the information, and keep your explanation simple for people who just need the answer."],
+ C:["Seeking agreement can delay a call.","When the group can't agree, practise making the call yourself, backed by data, and explain why."]
+};
+const CHARS = {
+ CarSpecialist:["Depth, accuracy and trust. People come to you when it gets hard.","Work that rewards mastery: hard problems and time to get them right."],
+ CarPeopleLeader:["Direction and ownership. You get people moving together.","Responsibility, a team to lead and clear goals to hit."],
+ CarCrossFunctional:["Bridges between teams. You bring different views together.","Variety, working across departments and working with people."],
+ CarBuilder:["Making things better: new tools, faster ways and better systems.","Chances to improve, experiment and see the result."]
+};
 function thinkScores(){
   return Object.keys(THINK).map(k=>{
     const t = THINK[k].tag, av = THINK_AVAIL[t]||1, n = tally[t]||0;
@@ -357,7 +474,7 @@ function thinkScores(){
 
 let flat = Q.slice();
 let idx=0, tally={}, statedThemes=[], supportKey=null, stage=document.getElementById('stage'), playerName="";
-let history=[], usedBack=new Set(), busy=false, picks=[];
+let history=[], usedBack=new Set(), busy=false, picks=[], funcKey=null;
 const DEPARTMENTS = ["ACCOUNT","BUSINESS PLANNING & PERFORMANCE","CORPORATE AFFAIRS & STAKEHOLDER ENGAGEMENT (CASE)","DIGITAL SALES (ADMIN)","DIGITAL SALES (AFFILIATE)","DIGITAL SALES (BUSINESS DEVELOPMENT)","DIGITAL SALES (COMMERCIAL SALES)","DIGITAL SALES (MARKETING & CREATIVE)","DIGITAL SALES (TECH & SYSTEM INTEGRATION)","DIGITAL SALES 1 (DS1)","DIGITAL SALES 2 (DS2)","DIGITAL SALES 3 (DS3)","FINANCE","HUMAN CAPITAL (OPERATIONS & CULTURE ADOPTION)","LEGAL","OLIVE HUB INNOVATION, PRODUCT & QUALITY EXCELLENCE","OPERATIONAL SUPPORT & INFRASTRUCTURE","PERFORMANCE & CUSTOMER MANAGEMENT","PLANNING & PROCUREMENT","PRODUCT COORDINATION & STRATEGIC SUPPORT","SALES","SALES CHANNEL - AGENT SALES","STORE BUSINESS MANAGEMENT (B2B)","SUPPLY CHAIN - FULFILMENT","SUPPLY CHAIN - PRODUCTION","SUPPLY CHAIN - QUALITY CONTROL","SUPPLY CHAIN - WAREHOUSE & LOGISTIC","TRANSFORMATION - PEOPLE STRATEGY","TRANSFORMATION - TECHNOLOGY ENABLEMENT"];
 const COMPANIES = ["AMSB","ADSB","Others"], ROLES = ["Top Management","HOD","HOS","Executive","Other"];
 const BATCH = (new URLSearchParams(location.search).get('batch')||'general').slice(0,80);
@@ -402,7 +519,7 @@ async function initMode(){
 
 // ---- intro ----
 function renderIntro(){
-  const crew = Object.keys(ARCH).map((k,i)=>`<div class="crew-m" style="animation-delay:${i*.18}s">${spriteSVG(makeGrid(k),k,4)}</div>`).join('');
+  const crew = Object.keys(ARCH).map((k,i)=>`<div class="crew-m" style="animation-delay:${i*.18}s">${spriteSVG(makeGrid(k),k,5)}</div>`).join('');
   const title = `<h1 class="logo"><span>YOUR</span><span>NEXT</span><span>CHAPTER</span></h1>`;
   if(mode==='invalid'){
     stage.innerHTML = `<div class="card pop">${title}<p class="lead">${esc(batchName)}</p></div>`; return;
@@ -416,7 +533,8 @@ function renderIntro(){
       <label class="flabel" for="fRole">Role</label><select class="field" id="fRole"><option value="">Select</option>${ROLES.map(c=>`<option>${c}</option>`).join('')}</select>
       <div class="ferr" id="fErr" role="alert"></div>
       <p class="fine">Your answers are saved for development conversations. They are not used for performance evaluation.</p>`
-    : `<label class="flabel" for="nameInput">What should we call you?</label><input type="text" id="nameInput" class="field" maxlength="24">`;
+    : `<label class="flabel" for="nameInput">What should we call you?</label><input type="text" id="nameInput" class="field" maxlength="24">
+      <label class="flabel" for="fFunc">Your area of work <span class="fine">(optional)</span></label><select class="field" id="fFunc"><option value="">Skip</option>${Object.keys(FUNCS).map(k=>`<option value="${k}">${FUNCS[k].lbl}</option>`).join('')}</select>`;
   stage.innerHTML = `<div class="card pop">
     ${batchName && BATCH!=='general' && mode==='server' ? `<div class="batchtag">${esc(batchName)}</div>` : ''}
     ${title}<div class="crew">${crew}</div>${blurb}${form}
@@ -435,10 +553,10 @@ function startStory(){
     else if(!v('fRole')) err='Please choose your role.';
     if(err){ document.getElementById('fErr').textContent = err; return; }
     participant = {name:v('fName'), company:company, department:v('fDept'), role:v('fRole')};
-    playerName = participant.name;
+    playerName = participant.name; funcKey = funcFromDept(participant.department);
   } else {
     const val = (document.getElementById('nameInput').value || '').trim();
-    playerName = val || 'you'; participant = {name:playerName};
+    playerName = val || 'you'; participant = {name:playerName}; funcKey = document.getElementById('fFunc').value || null;
   }
   submissionId = uuid(); lastPct = 0;
   render();
@@ -588,7 +706,7 @@ function computeProfile(){
     thinkScores: ts.map(x=>({k:x.k,n:x.n,av:x.av})),
     learnKey:learnKey, learnLabel:shortKey(learnKey,'Learn'), envKey:envKey, envLabel:shortKey(envKey,'Env'),
     energiseKey:energiseKey, energiseLabel:LABEL[energiseKey], whyKey:whyKey, whyLabel:LABEL[whyKey],
-    supportKey:supportKey, supportLabel:SUPPORT[supportKey]
+    supportKey:supportKey, supportLabel:SUPPORT[supportKey], functionKey:funcKey, functionLabel:funcKey?FUNCS[funcKey].lbl:'', roadmapPath:pathKey
   };
   return P;
 }
@@ -638,14 +756,24 @@ function renderResults(){
    ${panel('book','Learning style',`<p>${LEARN[P.learnKey]}</p>`)}
    ${panel('gear','How you naturally work',`<div class="sliders">${SPECTRA.map(s=>`<div class="srow"><span>${s.label[0]}</span>${slider(spectrum(s.l,s.r))}<span>${s.label[1]}</span></div>`).join('')}</div>`)}
    ${panel('rocket','Where you thrive',`<p>An environment with ${ENV[P.envKey]}</p>`)}
-   ${panel('star','Your next quests',`
-     <p>To build toward <b>${PATH.lbl}</b>:</p>
-     <ul class="quests">${PATH.dev.map(d=>`<li>${d}</li>`).join('')}</ul>
-     ${P.extraPath ? `<p>For the area you picked (<b>${P.lc(PATHS[P.extraPath].theme)}</b>):</p><ul class="quests">${PATHS[P.extraPath].dev.map(d=>`<li>${d}</li>`).join('')}</ul>` : ''}
-     <p><b>How you'd learn it best.</b> ${METHOD[P.learnKey]}</p>
-     <p><b>Support that would help most.</b> ${SUPPORT[supportKey]}.</p>
-     <p><b>Your growth edge (${P.tsP.lbl}).</b> ${EDGE[P.tsP.k]}</p>
-     <p class="boss"><b>Boss quest for the next 6 months.</b> ${PATH.stretch}</p>`,'dev')}
+   ${panel('rocket','Your learning roadmap',`
+     <p>Towards <b>${PATH.lbl}</b>. Three steps over about a year, alongside your normal work.</p>
+     <ol class="road">${ROADMAP[P.pathKey].map((r,i)=>`<li><div class="rph">${PHASES[i]}: ${r[0]}</div><p><b>Learn.</b> ${r[1]}</p><p><b>Try it at work.</b> ${r[2]}</p></li>`).join('')}</ol>
+     ${funcKey ? `<p class="callout"><b>In ${FUNCS[funcKey].lbl}.</b> ${FUNCS[funcKey][P.carKey]}</p>` : ''}
+     ${P.extraPath ? `<p class="note">You also picked <b>${P.lc(PATHS[P.extraPath].theme)}</b>. Worth building: ${PATHS[P.extraPath].dev.slice(0,2).map(d=>P.lc(d)).join('; ')}.</p>` : ''}
+     <p class="boss"><b>Boss quest, within 6 to 12 months.</b> ${PATH.stretch}</p>`,'dev')}
+   ${panel('book','How to make it stick',`
+     <p>${METHOD[P.learnKey]}</p>
+     <ul class="quests">${LEARN_TIPS[P.learnKey].map(t=>`<li>${t}</li>`).join('')}</ul>`,'dev')}
+   ${panel('heart','What would help you most',`<p><b>${SUPPORT[supportKey]}.</b></p><p>${SUPPORT_HOW[supportKey]}</p>`,'dev')}
+   ${panel('shield','Your watch-out',`
+     <p class="note">Every thinking style has a blind spot. This is the one to keep an eye on for <b>${P.tsP.lbl}</b>, with one habit that covers it.</p>
+     <p><b>${EDGE2[P.tsP.k][0]}</b></p><p>${EDGE2[P.tsP.k][1]}</p>`)}
+   ${panel('mega','Meet the other characters',`
+     <p class="note">Four characters, none better than the others. They are different ways of contributing.</p>
+     <div class="cast">${Object.keys(ARCH).map(k=>`<div class="cast-c${k===P.carKey?' me':''}" style="--c:${ARCH[k].bg}">
+       ${k===P.carKey?'<span class="you">That’s you</span>':''}<div class="cast-s">${spriteSVG(makeGrid(k),k,4)}</div>
+       <div class="cast-n">${ARCH[k].name}</div><p>${CHARS[k][0]}</p><p class="note"><b>Likes:</b> ${CHARS[k][1]}</p></div>`).join('')}</div>`)}
 
    <p class="note disclaimer">This is a preference indicator, not a ranking or a validated personality or capability assessment.</p>
    <div class="actions noprint">
