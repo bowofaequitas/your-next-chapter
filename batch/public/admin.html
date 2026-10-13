@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Your Next Chapter · L&D admin</title>
+<style>
+:root{--bg:#0d0e14;--card:#171923;--ink:#f0efe9;--sub:#9a9fb0;--accent:#e0a951;--accent2:#7d8cff;--border:#2a2d3a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Arial,sans-serif;padding:20px}
+.wrap{max-width:980px;margin:0 auto}h1{font:22px Georgia,serif;color:var(--accent);margin:0 0 4px}
+h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent2);margin:0 0 10px}
+.sub{color:var(--sub);margin-bottom:18px}.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--ink);padding:9px 11px;font-size:14px}
+button{background:var(--accent);color:#000;border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:13px}
+button.sec{background:transparent;color:var(--ink);border:1px solid var(--border);font-weight:400}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top}th{color:var(--sub);font-weight:400;font-size:12px}
+.bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:13px}.bar .l{width:230px;flex-shrink:0}
+.bar .t{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}.bar .f{height:100%;background:var(--accent2)}
+.bar .n{width:28px;text-align:right;color:var(--sub)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.err{color:#ff8b8b;margin-top:8px}.hidden{display:none}.tag{font-size:11px;color:var(--sub);border:1px solid var(--border);border-radius:10px;padding:1px 7px;margin-left:6px}
+.note{color:var(--sub);font-size:12px}.scroll{overflow-x:auto}
+</style></head><body><div class="wrap">
+<h1>Your Next Chapter · L&amp;D admin</h1><div class="sub">Batch links and group view. Results are for development conversations, not performance evaluation.</div>
+
+<div class="card" id="login"><h2>Admin key</h2><div class="row"><input type="password" id="key" placeholder="Admin key" autocomplete="off"><button id="go">Open</button></div><div class="err" id="loginErr"></div></div>
+
+<div id="app" class="hidden">
+ <div class="card"><h2>New batch</h2><div class="row"><input id="bname" placeholder="e.g. Pilot: Finance and HR, Oct 2026" size="40" maxlength="80"><button id="create">Create link</button></div><div class="err" id="createErr"></div></div>
+ <div class="card"><h2>Batches</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Responses</th><th>Status</th><th></th></tr></thead><tbody id="batches"></tbody></table></div></div>
+ <div id="detail" class="hidden">
+  <div class="card"><div class="row" style="justify-content:space-between"><h2 id="dtitle" style="margin:0"></h2><div class="row"><button class="sec" id="refresh">Refresh</button><button id="csv">Download CSV</button></div></div><div class="note" id="dnote"></div></div>
+  <div class="grid" id="charts"></div>
+  <div class="card"><h2>Respondents</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Growth direction</th><th>Thinking</th><th>Stated focus</th></tr></thead><tbody id="people"></tbody></table></div></div>
+ </div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);let KEY='',CUR=null,GEN=0;
+try{KEY=sessionStorage.getItem('yncKey')||''}catch{}
+const el=(t,txt,cls)=>{const e=document.createElement(t);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e};
+async function api(path,opt={}){const r=await fetch(path,{...opt,headers:{...(opt.headers||{}),Authorization:'Bearer '+KEY,'Content-Type':'application/json'}});
+ if(r.status===401)throw Error('Wrong admin key.');const d=r.headers.get('content-type')?.includes('json')?await r.json():await r.blob();if(!r.ok)throw Error(d.error||'Request failed');return d}
+async function enter(){try{const d=await api('/api/admin/batches');try{sessionStorage.setItem('yncKey',KEY)}catch{}$('login').classList.add('hidden');$('app').classList.remove('hidden');GEN=d.general;drawBatches(d.batches)}catch(e){$('loginErr').textContent=e.message}}
+$('go').onclick=()=>{KEY=$('key').value;enter()};$('key').onkeydown=e=>{if(e.key==='Enter')$('go').click()};if(KEY)enter();
+function link(id){return location.origin+'/?batch='+id}
+function drawBatches(list){const tb=$('batches');tb.replaceChildren();
+ const rows=[{id:'general',name:'General (no batch link)',closed:0,responses:GEN}].concat(list);
+ rows.forEach(b=>{const tr=el('tr');tr.append(el('td',b.name),el('td',b.responses),el('td',b.closed?'Closed':'Open'));const td=el('td');td.className='row';
+  const v=el('button','View','sec');v.onclick=()=>show(b);td.append(v);
+  if(b.id!=='general'){const c=el('button','Copy link','sec');c.onclick=async()=>{try{await navigator.clipboard.writeText(link(b.id));c.textContent='Copied'}catch{prompt('Copy this link',link(b.id))}};
+   const t=el('button',b.closed?'Reopen':'Close','sec');t.onclick=async()=>{await api('/api/admin/batches/'+b.id+'/'+(b.closed?'open':'close'),{method:'POST'});enter()};td.append(c,t)}
+  tr.append(td);tb.append(tr)})}
+$('create').onclick=async()=>{$('createErr').textContent='';try{const n=$('bname').value.trim();if(!n)throw Error('Give the batch a name.');await api('/api/admin/batches',{method:'POST',body:JSON.stringify({name:n})});$('bname').value='';enter()}catch(e){$('createErr').textContent=e.message}};
+function tally(list,fn){const m={};list.forEach(r=>{const k=fn(r)||'Not answered';m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+function chart(title,data,total){const c=el('div',null,'card');c.append(el('h2',title));data.forEach(([k,n])=>{const b=el('div',null,'bar');const t=el('div',null,'t'),f=el('div',null,'f');f.style.width=(total?n/total*100:0)+'%';t.append(f);b.append(el('div',k,'l'),t,el('div',n,'n'));c.append(b)});return c}
+async function show(b){CUR=b;$('detail').classList.remove('hidden');$('dtitle').textContent=b.name;$('dnote').textContent=b.id==='general'?'Responses submitted without a batch link.':'Link: '+link(b.id);
+ const d=await api('/api/admin/responses?batch='+encodeURIComponent(b.id));const R=d.responses;const ch=$('charts');ch.replaceChildren();
+ if(!R.length){ch.append(el('div','No responses yet.','card'));$('people').replaceChildren();return}
+ ch.append(chart('Growth direction (inferred)',tally(R,r=>r.summary.pathLabel),R.length),chart('Career pull',tally(R,r=>r.summary.careerLabel),R.length),
+  chart('Thinking style (natural lean)',tally(R,r=>r.summary.thinkLabel),R.length),chart('Learning style',tally(R,r=>r.summary.learnLabel),R.length),
+  chart('Stated focus (up to 2 each)',tally(R.flatMap(r=>(r.summary.statedLabels||['Not sure yet']).map(x=>({summary:{x}}))),r=>r.summary.x),R.length),
+  chart('Support wanted',tally(R,r=>r.summary.supportLabel),R.length),chart('Role',tally(R,r=>r.role),R.length),chart('Department',tally(R,r=>r.department),R.length));
+ const tb=$('people');tb.replaceChildren();R.forEach(r=>{const tr=el('tr');tr.append(el('td',r.name),el('td',r.department||''),el('td',r.role||''),el('td',r.summary.pathLabel||''),el('td',r.summary.thinkLabel||''),el('td',(r.summary.statedLabels||[]).join(' + ')));tb.append(tr)})}
+$('refresh').onclick=()=>CUR&&show(CUR);
+$('csv').onclick=async()=>{const blob=await api('/api/admin/export.csv?batch='+encodeURIComponent(CUR.id));const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='your-next-chapter.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+</script></body></html>

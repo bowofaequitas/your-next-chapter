@@ -70,6 +70,14 @@ font-weight:700;cursor:pointer;width:100%;font-family:Arial,sans-serif;}
 .dots{display:flex;gap:5px;margin-bottom:16px;}
 .dot2{flex:1;height:3px;background:var(--border);border-radius:2px;}
 .dot2.done{background:var(--accent);}
+.field{display:block;width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:var(--ink);padding:12px;font-size:14.5px;font-family:Georgia,serif;margin-bottom:10px;text-align:left;}
+select.field option{color:#000}
+.flabel{display:block;text-align:left;font-family:Arial,sans-serif;font-size:12px;color:var(--sub);margin:0 0 4px 2px;}
+.ferr{color:#ff8b8b;font-family:Arial,sans-serif;font-size:12.5px;margin:2px 0 10px;min-height:16px;text-align:left;}
+.eyebrow{font-family:Arial,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+@media print{:root{--bg:#fff;--ink:#111;--sub:#555;--accent:#8a5a00;--accent2:#3a47b8;--border:#ccc;--card:#fff}
+ body,.frame{background:#fff!important}.letter,.restart,.admin-toggle,.admin,.noprint{display:none!important}
+ .stage{padding:0;justify-content:flex-start}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}.sec{break-inside:avoid}}
 .chip{font-family:Arial,sans-serif;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);text-align:center;margin-bottom:8px;}
 .or{font-family:Arial,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--sub);text-align:center;margin:-2px 0 9px;}
 .pkcount{font-family:Arial,sans-serif;font-size:12px;color:var(--sub);text-align:center;margin:4px 0 10px;}
@@ -296,21 +304,72 @@ function nm(s){ s = s||'';
   return s.replace(/,\s*\{\{NAME\}\}/g,'').replace(/\{\{NAME\}\},\s*/g,'').split('{{NAME}}').join('you'); }
 
 function renderIntro(){
-  stage.innerHTML = `<div class="scene" style="text-align:center">
-    <div class="ask" style="font-size:22px;margin-bottom:8px;color:var(--accent);font-family:Georgia,serif;">YOUR NEXT CHAPTER</div>
-    <div class="narr" style="margin-bottom:10px;">A few quick questions about how you work, think and grow.</div>
-    <div class="narr" style="font-size:13px;font-style:normal;color:var(--sub);font-family:Arial,sans-serif;margin-bottom:22px;">${flat.length} quick cards, about 4 minutes.<br>No right or wrong answers. Just pick what feels most like you.</div>
+  const head = `<div class="ask" style="font-size:22px;margin-bottom:8px;color:var(--accent);font-family:Georgia,serif;">YOUR NEXT CHAPTER</div>`;
+  if(mode==='invalid'){
+    stage.innerHTML = `<div class="scene" style="text-align:center">${head}<div class="narr">${esc(batchName)}</div></div>`; return;
+  }
+  const blurb = `<div class="narr" style="font-size:13px;font-style:normal;color:var(--sub);font-family:Arial,sans-serif;margin-bottom:18px;">${flat.length} quick cards, about 4 minutes.<br>No right or wrong answers. Just pick what feels most like you.</div>`;
+  if(mode==='server'){
+    stage.innerHTML = `<div class="scene" style="text-align:center">${head}
+      ${batchName && BATCH!=='general' ? `<div class="eyebrow">${esc(batchName)}</div>` : ''}
+      <div class="narr" style="margin-bottom:8px;">A few quick questions about how you work, think and grow.</div>${blurb}
+      <label class="flabel" for="fName">Name</label><input class="field" id="fName" maxlength="100" autocomplete="name">
+      <label class="flabel" for="fCompany">Company</label><select class="field" id="fCompany" onchange="document.getElementById('fCompanyOtherWrap').style.display=this.value==='Others'?'block':'none'"><option value="">Select</option>${COMPANIES.map(c=>`<option>${c}</option>`).join('')}</select>
+      <div id="fCompanyOtherWrap" style="display:none"><input class="field" id="fCompanyOther" maxlength="100" placeholder="Company name"></div>
+      <label class="flabel" for="fDept">Department</label><input class="field" id="fDept" list="deptList" maxlength="120" placeholder="Start typing to search"><datalist id="deptList">${DEPARTMENTS.map(d=>`<option value="${esc(d)}">`).join('')}</datalist>
+      <label class="flabel" for="fRole">Role</label><select class="field" id="fRole"><option value="">Select</option>${ROLES.map(c=>`<option>${c}</option>`).join('')}</select>
+      <div class="ferr" id="fErr" role="alert"></div>
+      <div class="note" style="text-align:left;margin:0 0 14px;font-family:Arial,sans-serif;">Your answers are saved for development conversations. They are not used for performance evaluation.</div>
+      <button class="cbtn" style="width:100%" onclick="startStory()">START →</button></div>`;
+    document.getElementById('fName').focus();
+    return;
+  }
+  stage.innerHTML = `<div class="scene" style="text-align:center">${head}
+    <div class="narr" style="margin-bottom:10px;">A few quick questions about how you work, think and grow.</div>${blurb}
     <input type="text" id="nameInput" class="nameinput" placeholder="What should we call you?" maxlength="24">
-    <button class="cbtn" style="width:100%" onclick="startStory()">START →</button>
-    </div>`;
+    <button class="cbtn" style="width:100%" onclick="startStory()">START →</button></div>`;
   document.getElementById('nameInput').focus();
 }
 function startStory(){
-  const v = (document.getElementById('nameInput').value || '').trim();
-  playerName = v || 'you';
+  if(mode==='server'){
+    const v = id=>(document.getElementById(id).value||'').trim();
+    const company = v('fCompany')==='Others' ? v('fCompanyOther') : v('fCompany');
+    let err = '';
+    if(!v('fName')) err='Please enter your name.';
+    else if(!v('fCompany')) err='Please choose your company.';
+    else if(v('fCompany')==='Others' && !v('fCompanyOther')) err='Please enter your company name.';
+    else if(!v('fDept')) err='Please enter your department.';
+    else if(!v('fRole')) err='Please choose your role.';
+    if(err){ document.getElementById('fErr').textContent = err; return; }
+    participant = {name:v('fName'), company:company, department:v('fDept'), role:v('fRole')};
+    playerName = participant.name;
+  } else {
+    const val = (document.getElementById('nameInput').value || '').trim();
+    playerName = val || 'you'; participant = {name:playerName};
+  }
+  submissionId = uuid();
   render();
 }
 let busy=false, picks=[];
+const DEPARTMENTS = ["ACCOUNT", "BUSINESS PLANNING & PERFORMANCE", "CORPORATE AFFAIRS & STAKEHOLDER ENGAGEMENT (CASE)", "DIGITAL SALES (ADMIN)", "DIGITAL SALES (AFFILIATE)", "DIGITAL SALES (BUSINESS DEVELOPMENT)", "DIGITAL SALES (COMMERCIAL SALES)", "DIGITAL SALES (MARKETING & CREATIVE)", "DIGITAL SALES (TECH & SYSTEM INTEGRATION)", "DIGITAL SALES 1 (DS1)", "DIGITAL SALES 2 (DS2)", "DIGITAL SALES 3 (DS3)", "FINANCE", "HUMAN CAPITAL (OPERATIONS & CULTURE ADOPTION)", "LEGAL", "OLIVE HUB INNOVATION, PRODUCT & QUALITY EXCELLENCE", "OPERATIONAL SUPPORT & INFRASTRUCTURE", "PERFORMANCE & CUSTOMER MANAGEMENT", "PLANNING & PROCUREMENT", "PRODUCT COORDINATION & STRATEGIC SUPPORT", "SALES", "SALES CHANNEL - AGENT SALES", "STORE BUSINESS MANAGEMENT (B2B)", "SUPPLY CHAIN - FULFILMENT", "SUPPLY CHAIN - PRODUCTION", "SUPPLY CHAIN - QUALITY CONTROL", "SUPPLY CHAIN - WAREHOUSE & LOGISTIC", "TRANSFORMATION - PEOPLE STRATEGY", "TRANSFORMATION - TECHNOLOGY ENABLEMENT"];
+const COMPANIES = ["AMSB","ADSB","Others"], ROLES = ["Top Management","HOD","HOS","Executive","Other"];
+const BATCH = (new URLSearchParams(location.search).get('batch')||'general').slice(0,80);
+let mode = 'offline', batchName = '', participant = {}, submissionId = '', lastSummary = null, saveState = '';
+function uuid(){ try{ return crypto.randomUUID(); }catch(e){ return 'id-'+Date.now().toString(36)+Math.random().toString(36).slice(2,10); } }
+function browserId(){ let b=uuid(); try{ b=localStorage.getItem('ync-browser')||b; localStorage.setItem('ync-browser',b); }catch(e){} return b; }
+const esc = t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function initMode(){
+  try{
+    const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(), 4000);
+    const r = await fetch('/api/batch-info?batch='+encodeURIComponent(BATCH), {signal:ctl.signal}); clearTimeout(to);
+    const ct = r.headers.get('content-type')||'';
+    if(!ct.includes('json')) throw new Error('no server');
+    const d = await r.json();
+    if(r.ok){ mode='server'; batchName = d.name||''; }
+    else { mode='invalid'; batchName = d.error||'This link could not be opened.'; }
+  }catch(e){ mode='offline'; }
+  renderIntro();
+}
 const KIND = {sit:'Situation', duo:'This or that', top3:'Pick three'};
 function render(){ busy=false; picks=[]; renderScene(flat[idx]); }
 function progress(){
@@ -333,7 +392,7 @@ function advance(){ idx++; if(idx>=flat.length) renderAspiration(); else render(
 function choose(i){
   if(busy) return; busy=true;
   const opt = flat[idx].o[i];
-  bump(opt[1]); history.push({idx:idx, tags:opt[1].slice()});
+  bump(opt[1]); history.push({idx:idx, tags:opt[1].slice(), sel:[i]});
   const el = stage.querySelectorAll('.opt')[i]; if(el) el.classList.add('sel');
   setTimeout(advance, 260);
 }
@@ -349,7 +408,7 @@ function confirmPicks(){
   if(busy || picks.length!==3) return; busy=true;
   const q = flat[idx], tags=[];
   picks.forEach(i=>q.o[i][1].forEach(t=>tags.push(t)));
-  bump(tags); history.push({idx:idx, tags:tags});
+  bump(tags); history.push({idx:idx, tags:tags, sel:picks.slice()});
   setTimeout(advance, 200);
 }
 function goBack(){
@@ -390,7 +449,27 @@ function renderSupport(){
   stage.innerHTML = `<div class="scene"><div class="ask">What would help you most to get there?</div>
    ${Object.keys(SUPPORT).map((k,i)=>`<button class="opt" onclick="chooseSupport('${k}')"><b>${letters[i]}.</b>${SUPPORT[k]}</button>`).join('')}</div>`;
 }
-function chooseSupport(k){ supportKey = k; renderResults(); }
+function chooseSupport(k){
+  supportKey = k;
+  renderResults();
+  if(mode==='server') submitResponse();
+}
+async function submitResponse(){
+  stage.innerHTML = `<div class="scene" style="text-align:center"><div class="narr">Saving your responses…</div></div>`;
+  const payload = {id:submissionId, browser:browserId(), batch:BATCH, version:'v15', participant:participant,
+    answers: history.map(h=>({card:h.idx, picks:h.sel})), tally:tally, summary:lastSummary};
+  try{
+    const r = await fetch('/api/responses', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    const d = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(d.error||'We could not save your responses.');
+    saveState = 'saved'; renderResults();
+  }catch(e){
+    stage.innerHTML = `<div class="scene" style="text-align:center"><div class="narr">${esc(e.message)}</div>
+      <div class="note" style="margin-bottom:14px;font-family:Arial,sans-serif;">Your answers are still here. You can retry safely.</div>
+      <button class="cbtn" style="width:100%;margin-bottom:10px" onclick="submitResponse()">Try again</button>
+      <button class="opt" style="text-align:center" onclick="renderResults()">See my profile without saving</button></div>`;
+  }
+}
 
 function renderResults(){
   const energiseKey = pickTop(ENERGISE_TAGS) || 'Achievement';
@@ -415,9 +494,20 @@ function renderResults(){
   else if(stated.some(k=>PATHS[k].parent===carKey)) statedNote = `You said you'd like to focus on ${statedNames}. That's the same direction as your choices, with a different focus.`;
   else statedNote = `You said you'd like to focus on ${statedNames}, which is different from where your choices leaned. Worth a conversation, not a conclusion.`;
   const extraPath = stated.find(k=>k!==pathKey);
+  const shortKey = (k,p)=>k.replace(p,'').replace('SelfDirected','Self-directed');
+  lastSummary = {
+    careerKey:carKey, careerLabel:CAR[carKey].lbl, pathKey:pathKey, pathLabel:PATH.lbl,
+    stated:statedThemes.slice(), statedLabels: stated.length ? stated.map(k=>PATHS[k].theme) : ['Not sure yet'],
+    thinkKey:tsP.k, thinkLabel: thinkBlend ? tsP.lbl+' + '+tsS.lbl : tsP.lbl,
+    thinkScores: ts.map(x=>({k:x.k,n:x.n,av:x.av})),
+    learnKey:learnKey, learnLabel:shortKey(learnKey,'Learn'), envKey:envKey, envLabel:shortKey(envKey,'Env'),
+    energiseKey:energiseKey, energiseLabel:LABEL[energiseKey], whyKey:whyKey, whyLabel:LABEL[whyKey],
+    supportKey:supportKey, supportLabel:SUPPORT[supportKey]
+  };
 
   stage.innerHTML = `<div class="result">
-  <h1>${playerName!=='you' ? playerName+"\u2019s" : 'Your'} Next Chapter Profile</h1>
+  ${saveState==='saved' ? '<div class="eyebrow noprint">Responses saved · thank you</div>' : ''}
+  <h1>${playerName!=='you' ? esc(playerName)+"\u2019s" : 'Your'} Next Chapter Profile</h1>
   <div class="sub">Not a personality type — a pattern built from every decision you just made.</div>
 
   <div class="sec"><h3>🔥 Aspiration & Drive</h3>
@@ -460,9 +550,11 @@ function renderResults(){
    <p style="margin-top:8px"><b>Your growth edge (${tsP.lbl}).</b> ${EDGE[tsP.k]}</p>
    <p style="margin-top:8px"><b>A stretch for the next 6 months.</b> ${PATH.stretch}</p></div>
 
-  <button class="admin-toggle" onclick="toggleAdmin()">🔒 Show L&D scoring view (admin)</button>
+  <p class="note">This is a preference indicator, not a ranking or a validated personality or capability assessment.</p>
+  <button class="restart noprint" style="background:transparent;color:var(--ink);border:1px solid var(--border)" onclick="window.print()">Print / Save as PDF</button>
+  ${mode==='server' ? '' : `<button class="admin-toggle noprint" onclick="toggleAdmin()">🔒 Show L&D scoring view (admin)</button>
   <div class="admin hidden" id="adminPanel"></div>
-  <button class="restart" onclick="restart()">Play again</button>
+  <button class="restart" onclick="restart()">Play again</button>`}
   </div>`;
 }
 function toggleAdmin(){
@@ -488,8 +580,8 @@ function toggleAdmin(){
     p.innerHTML = html;
   }
 }
-function restart(){ idx=0; tally={}; statedThemes=[]; supportKey=null; lastChapterShown=0; playerName=""; chapterLog={}; history=[]; usedBack=new Set(); renderIntro(); }
-renderIntro();
+function restart(){ submissionId=''; saveState=''; lastSummary=null; idx=0; tally={}; statedThemes=[]; supportKey=null; lastChapterShown=0; playerName=""; chapterLog={}; history=[]; usedBack=new Set(); renderIntro(); }
+initMode();
 </script>
 </body>
 </html>
