@@ -27,8 +27,9 @@ th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);vert
  <div class="card"><h2>Batches</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Responses</th><th>Status</th><th></th></tr></thead><tbody id="batches"></tbody></table></div></div>
  <div id="detail" class="hidden">
   <div class="card"><div class="row" style="justify-content:space-between"><h2 id="dtitle" style="margin:0"></h2><div class="row"><button class="sec" id="refresh">Refresh</button><button id="csv">Download CSV</button></div></div><div class="note" id="dnote"></div></div>
+  <div class="card"><h2>Learning plan view</h2><div class="note">Per growth direction: how many people, who they are by area, what support they asked for, and the suggested way to deliver the learning. Use it to plan roadmaps and materials. Small numbers are indicative only.</div><div class="scroll"><table><thead><tr><th>Growth direction</th><th>People</th><th>Areas of work</th><th>Support asked</th><th>How they learn best</th><th>Suggested format</th></tr></thead><tbody id="plan"></tbody></table></div></div>
   <div class="grid" id="charts"></div>
-  <div class="card"><h2>Respondents</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Growth direction</th><th>Thinking</th><th>Stated focus</th></tr></thead><tbody id="people"></tbody></table></div></div>
+  <div class="card"><h2>Respondents</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Growth direction</th><th>Thinking</th><th>Stated focus</th><th>Area of work</th><th>Support</th></tr></thead><tbody id="people"></tbody></table></div></div>
  </div>
 </div></div>
 <script>
@@ -56,8 +57,16 @@ async function show(b){CUR=b;$('detail').classList.remove('hidden');$('dtitle').
  ch.append(chart('Growth direction (inferred)',tally(R,r=>r.summary.pathLabel),R.length),chart('Career pull',tally(R,r=>r.summary.careerLabel),R.length),
   chart('Thinking style (natural lean)',tally(R,r=>r.summary.thinkLabel),R.length),chart('Learning style',tally(R,r=>r.summary.learnLabel),R.length),
   chart('Stated focus (up to 2 each)',tally(R.flatMap(r=>(r.summary.statedLabels||['Not sure yet']).map(x=>({summary:{x}}))),r=>r.summary.x),R.length),
-  chart('Support wanted',tally(R,r=>r.summary.supportLabel),R.length),chart('Role',tally(R,r=>r.role),R.length),chart('Department',tally(R,r=>r.department),R.length));
- const tb=$('people');tb.replaceChildren();R.forEach(r=>{const tr=el('tr');tr.append(el('td',r.name),el('td',r.department||''),el('td',r.role||''),el('td',r.summary.pathLabel||''),el('td',r.summary.thinkLabel||''),el('td',(r.summary.statedLabels||[]).join(' + ')));tb.append(tr)})}
+  chart('Support wanted',tally(R,r=>r.summary.supportLabel),R.length),chart('Area of work',tally(R,r=>r.summary.functionLabel),R.length),chart('Role',tally(R,r=>r.role),R.length),chart('Department',tally(R,r=>r.department),R.length));
+ const tb=$('people');tb.replaceChildren();R.forEach(r=>{const tr=el('tr');tr.append(el('td',r.name),el('td',r.department||''),el('td',r.role||''),el('td',r.summary.pathLabel||''),el('td',r.summary.thinkLabel||''),el('td',(r.summary.statedLabels||[]).join(' + ')),el('td',r.summary.functionLabel||''),el('td',r.summary.supportLabel||''));tb.append(tr)});drawPlan(R)}
+const FORMAT={Structured:'Cohort programme or certification, with milestones',Experiential:'Stretch assignments with a short debrief',Social:'Mentoring and shadowing',"Self-directed":'Curated resource list with monthly check-ins'};
+function topN(list,n){return tally(list,x=>x).slice(0,n).filter(x=>x[0]!=='Not answered').map(x=>x[0]+' ('+x[1]+')').join(', ')}
+function drawPlan(R){const tb=$('plan');tb.replaceChildren();const g={};R.forEach(r=>{const k=r.summary.pathLabel||'Not answered';(g[k]=g[k]||[]).push(r.summary)});
+ Object.entries(g).sort((a,b)=>b[1].length-a[1].length).forEach(([k,L])=>{const tr=el('tr');const l=tally(L,s=>s.learnLabel)[0];
+  tr.append(el('td',k),el('td',L.length),el('td',topN(L.map(s=>s.functionLabel),3)||'-'),el('td',topN(L.map(s=>s.supportLabel),2)||'-'),el('td',topN(L.map(s=>s.learnLabel),2)||'-'),el('td',l?FORMAT[l[0]]||'':''));tb.append(tr)})}
 $('refresh').onclick=()=>CUR&&show(CUR);
-$('csv').onclick=async()=>{const blob=await api('/api/admin/export.csv?batch='+encodeURIComponent(CUR.id));const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='your-next-chapter.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+$('csv').onclick=async()=>{const d=await api('/api/admin/responses?batch='+encodeURIComponent(CUR.id));const cell=v=>{let t=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(t))t="'"+t;return '"'+t.replace(/"/g,'""')+'"'};
+ const head=['Name','Company','Department','Role','Area of work','Career pull','Growth direction','Stated focus','Thinking style','Learning style','Drive','Why','Environment','Support wanted','Submitted'];
+ const rows=d.responses.map(r=>{const s=r.summary||{};return [r.name,r.company,r.department,r.role,s.functionLabel,s.careerLabel,s.pathLabel,(s.statedLabels||[]).join(' + '),s.thinkLabel,s.learnLabel,s.energiseLabel,s.whyLabel,s.envLabel,s.supportLabel,r.created_at]});
+ const text='\ufeff'+[head,...rows].map(r=>r.map(cell).join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.download='your-next-chapter.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
 </script></body></html>
