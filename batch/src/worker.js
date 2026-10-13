@@ -104,6 +104,20 @@ export default {
           return json({ ok: true });
         }
 
+        if (path === '/api/admin/responses/delete' && request.method === 'POST') {
+          const b = await request.json().catch(() => ({}));
+          const rid = clip(b.id, 80);
+          if (!rid) return json({ error: 'Missing id.' }, 400);
+          const r = await env.DB.prepare('DELETE FROM responses WHERE id = ?').bind(rid).run();
+          return json({ ok: true, deleted: (r.meta && r.meta.changes) || 0 });
+        }
+
+        const mc = path.match(/^\/api\/admin\/batches\/([^/]+)\/clear$/);
+        if (mc && request.method === 'POST') {
+          const r = await env.DB.prepare('DELETE FROM responses WHERE batch = ?').bind(decodeURIComponent(mc[1])).run();
+          return json({ ok: true, deleted: (r.meta && r.meta.changes) || 0 });
+        }
+
         if (path === '/api/admin/responses' && request.method === 'GET') {
           const batch = clip(url.searchParams.get('batch') || 'general', 80);
           const { results } = await env.DB.prepare(
