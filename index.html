@@ -12,7 +12,7 @@ body{margin:0;background:#000;color:var(--ink);font-family:Georgia,'Times New Ro
 .frame{width:100%;max-width:620px;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column;}
 .letter{background:#000;height:22px;flex-shrink:0;}
 .stage{flex:1;padding:22px 22px 34px;display:flex;flex-direction:column;justify-content:center;position:relative;min-height:480px;}
-.scene{animation:fadein .5s ease;}
+.scene{animation:fadein .3s ease;}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .narr{font-size:16px;line-height:1.6;color:var(--ink);margin-bottom:14px;text-align:center;font-style:italic;}
 .ask{font-family:Arial,sans-serif;font-weight:700;text-align:center;color:var(--accent2);margin-bottom:16px;font-size:15px;font-style:normal;}
@@ -70,6 +70,9 @@ font-weight:700;cursor:pointer;width:100%;font-family:Arial,sans-serif;}
 .dots{display:flex;gap:5px;margin-bottom:16px;}
 .dot2{flex:1;height:3px;background:var(--border);border-radius:2px;}
 .dot2.done{background:var(--accent);}
+.chip{font-family:Arial,sans-serif;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);text-align:center;margin-bottom:8px;}
+.or{font-family:Arial,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--sub);text-align:center;margin:-2px 0 9px;}
+.pkcount{font-family:Arial,sans-serif;font-size:12px;color:var(--sub);text-align:center;margin:4px 0 10px;}
 </style>
 </head>
 <body>
@@ -79,45 +82,82 @@ font-weight:700;cursor:pointer;width:100%;font-family:Arial,sans-serif;}
 <div class="letter"></div>
 </div>
 <script>
-const CH = [
- {"n":1,"w":"Week 1","e":"🌱","t":"The Opportunity","s":"A Monday assignment that sounds small. It isn't."},
- {"n":2,"w":"Month 2","e":"🧩","t":"The Roadblock","s":"The numbers are starting to agree. Then something shifts."},
- {"n":3,"w":"Month 3","e":"🛤️","t":"The Crossroads","s":"The report works. People are noticing."},
- {"n":4,"w":"Month 5","e":"📚","t":"The Learning Quest","s":"A bigger role is on offer."},
- {"n":5,"w":"Month 8","e":"⚡","t":"The Pressure Test","s":"The rollout begins. This time, nobody hands you a plan."},
- {"n":6,"w":"Month 11","e":"🚀","t":"Where You Thrive","s":"It worked. What keeps you at your best?"}
-];
 const Q = [
-{"c":1,"t":"Monday, 8.45am at Aafiyat. Kak Yana drops by: “Laporan Finance dengan Operations tak pernah sama setiap hujung bulan. Boleh tolong tengokkan? Cara buat, kamu decide.”","ask":"What do you do first?","o":[["Ask what “fixed” should look like.",["Structure","Achievement"],"“Satu laporan, satu nombor.” Clear enough.","You started by asking what “fixed” should look like."],["Question whether the report itself is the problem.",["Innovation","Mastery"],"You open a blank page.","You started by questioning the report itself."],["Find who sends the numbers and talk to them.",["Collaboration","Belonging"],"First stop: Angah's desk.","You started by talking to the people behind the numbers."],["Open both files and figure it out.",["Autonomy","Innovation"],"Two spreadsheets, side by side.","You started by opening both files and figuring it out."]]},
-{"c":1,"t":"By Wednesday it's clear: not a typo. The two files don't even agree on what they're counting.","ask":"How do you dig in?","o":[["Trace the raw data.",["Mastery","Analytical"],"Found it: Finance counts invoiced, Operations counts delivered.","Then you traced the raw data to find where it split."],["Ask the people who key it in.",["Collaboration","Belonging"],"Angah explains: invoice versus delivery.","Then you asked the people who key it in."],["Sketch a few ways it could work.",["Innovation","Autonomy"],"It clicks: same word, two meanings.","Then you sketched a few ways it could work."],["Fix one small part and see.",["Growth","Autonomy"],"The number shifts. Now you see why.","Then you tested a small fix first."]]},
-{"c":1,"t":"Friday: the two reports finally match, for one month of data. Kak Yana: “Okay, ni baru betul.”","ask":"Which part feels best?","o":[["We did it as a team.",["Collaboration","Belonging"],"You and Angah grin across the desks."],["I got it done myself.",["Achievement","Mastery"],"Nobody saw the late evenings. You know."],["The real problem is smaller now.",["Impact","Purpose"],"Days of reconciling, down to minutes."],["People noticed, and it helped them.",["Recognition","Impact"],"Puan Salwa looks up from her laptop."]]},
-{"c":1,"t":"Month-end. The numbers match and nobody argues. In the pantry, Kak Yana asks: “Apa yang kamu paling bangga?”","ask":"What do you tell her?","o":[["“That people can rely on me.”",["Mastery","Security"],"She nods, quietly pleased."],["“That I made it work better.”",["Innovation","Achievement"],"The old version feels ancient now."],["“That I got people working together.”",["Collaboration","Influence"],"Even Angah agrees that was the hard part."],["“That it changed how people work.”",["Impact","Purpose"],"You mean it. She can tell."]]},
-{"c":2,"t":"Month 2. Operations can't change how they count, and Puan Salwa wants one number. Kak Yana: “Dua pilihan: template tetap, atau bina satu sistem kongsi. Kamu rasa mana?”","ask":"Which way do you lean?","o":[["Fixed template. We know it works.",["Security","Structure"],"Safe, clear, done in two weeks.","You chose the fixed template, the safer route."],["Shared system. It fixes this for good.",["Impact","RiskTaking"],"She raises an eyebrow. “Okay, kita cuba.”","You backed a shared system, the bigger risk."],["Give me a day to check the risks.",["Analytical","Security"],"You spend the evening listing them.","You took a day to weigh the risks first."],["Pilot the shared system with one team.",["Autonomy","Growth"],"A small pilot buys room to learn.","You piloted the shared system with one team first."]]},
-{"c":2,"t":"A week before month-end, Finance and Operations talk over each other. Then everyone looks at you. Kak Yana: “Okay, {{NAME}}. Kita fokus apa dulu?”","ask":"What's your instinct?","o":[["Organise who does what, in what order.",["Structure","Achievement"],"The list is on the whiteboard in a minute.","In the tense meeting, you organised who does what."],["Find the real cause of the mismatch.",["Mastery","Analytical"],"It's not what anyone assumed.","In the tense meeting, you went looking for the real cause."],["Get both teams on the same page.",["Collaboration","Belonging"],"Ten minutes of talking saves an hour.","In the tense meeting, you aligned both teams first."],["Step back and see the bigger picture.",["SystemsThinking","Impact"],"It links to an older issue nobody connected.","In the tense meeting, you stepped back to see the bigger picture."]]},
-{"c":2,"t":"The plan runs on Finance's reporting system. You've never used it, and the first joint report is due in two weeks.","ask":"How would you rather learn it?","o":[["Show me once, then let me try.",["LearnSocial","LearnExperiential"],"Angah shows you in ten minutes."],["Give me a step-by-step guide.",["LearnStructured"],"You read it twice before touching anything."],["Give me a real problem to solve.",["LearnExperiential"],"You learn most of it by breaking it."],["Let me explore on my own.",["LearnSelfDirected"],"You click around until it makes sense."]]},
-{"c":3,"t":"Month-end again, numbers match. It's Friday, 5.40pm, and Angah leans on your cubicle: “Hari mana paling best bulan ni?”","ask":"What was that day like?","o":[["I solved something hard, mostly alone.",["Autonomy","Mastery"],"Nobody saw the failed attempts."],["I worked with good people.",["Collaboration","Belonging"],"It didn't even feel like work."],["I made real progress on something that mattered.",["Achievement","Impact"],"You crossed it off and meant it."],["I learned something new.",["Growth","Innovation"],"Still thinking about it on the drive home."]]},
-{"c":3,"t":"Monday: a customer audit lands. Puan Salwa pulls the whole team onto it, and your week is gone.","ask":"What do you do?","o":[["Adjust and move with it.",["Adaptability","Achievement"],"Already three steps in.","When the audit landed, you adjusted and moved with it."],["Re-plan the week properly.",["Structure","Achievement"],"New plan before lunch.","When the audit landed, you re-planned the week."],["Ask why it changed first.",["Purpose","Analytical"],"Knowing why makes it easier.","When the audit landed, you asked why it changed first."],["Look for the opportunity in it.",["Innovation","Autonomy"],"It's a door, not just a delay.","When the audit landed, you looked for the opportunity in it."]]},
-{"c":3,"t":"The audit needs a summary pack. No template, no example.","ask":"What setup suits you best?","o":[["Clear structure to work within.",["Structure"],"Give you the lines, you'll stay inside them.","For the audit pack, you wanted clear structure."],["Freedom to find my own way.",["Autonomy"],"You'd rather find your own route.","For the audit pack, you wanted freedom to find your own way."],["Work it out with others.",["Collaboration"],"Two heads beat one.","For the audit pack, you wanted to work it out with others."],["Time to think before acting.",["Analytical"],"You'd rather be right than fast.","For the audit pack, you took time to think first."]]},
-{"c":4,"t":"Audit done, no findings. Puan Salwa wants the new report rolled out to three more departments, and wants you on it. Kak Yana: “Kak Timah dari Planning boleh mentor. Tapi dulu, kamu nampak diri kamu jadi apa lagi dua tiga tahun?”","ask":"Which future sounds most like you?","o":[["A recognised expert in my area.",["CarSpecialist","Mastery"],"You can picture the title.","You said you see yourself as a recognised expert."],["Leading people, helping them grow.",["CarPeopleLeader","Growth"],"You think about who'd be on your team.","You said you want to lead people and help them grow."],["Solving bigger problems across the company.",["CarCrossFunctional","SystemsThinking"],"The messier, the better.","You said you want bigger, company-wide problems."],["Building new ways of working.",["CarBuilder","Innovation"],"You'd rather build than maintain.","You said you want to build new ways of working."]]},
-{"c":4,"t":"A few days later, Kak Yana: “Kak Timah sudi tolong. Cara belajar macam mana paling sesuai dengan kamu?”","ask":"What would help you most?","o":[["A structured programme.",["LearnStructured"],"You like knowing what's next."],["A challenging project, learning by doing.",["LearnExperiential"],"Throw you in, you'll figure it out."],["A mentor like Kak Timah.",["LearnSocial"],"She makes time without being asked twice."],["Good resources to learn on my own.",["LearnSelfDirected"],"Point you at the material, give you space."]]},
-{"c":4,"t":"Puan Salwa shares the rollout setup. Four roles need filling, and Kak Yana says you can put your hand up for one.","ask":"Which role would you take?","o":[["Technical lead: knows the new system inside out.",["CarSpecialist","PathTechSpecialist"],"Everyone will come to you when it breaks.","For the rollout, you picked technical lead."],["Team lead: look after the rollout crew.",["CarPeopleLeader","PathTeamLead"],"You picture the Monday huddle.","For the rollout, you picked team lead."],["Business liaison: link the departments.",["CarCrossFunctional","PathBizPartner"],"You'd enjoy translating between them.","For the rollout, you picked business liaison."],["Automation lead: simplify and automate.",["CarBuilder","PathDigitalBuilder"],"You're already listing what a script could do.","For the rollout, you picked automation lead."]]},
-{"c":4,"t":"Over coffee, Kak Timah asks: “Lima tahun lagi, apa yang buat kamu rasa semua ni berbaloi?”","ask":"What would it be?","o":[["I became really good at something.",["Mastery","Achievement"],"You'd know, even if nobody else did."],["I helped people grow.",["Collaboration","Growth"],"Their wins would feel like yours."],["I solved something for the whole company.",["Impact","SystemsThinking"],"Small effort, big ripple."],["I built something that outlasted me.",["Purpose","LastingValue"],"Still running after you've moved on."]]},
-{"c":4,"t":"Three departments want to go first, and Kak Yana lets you choose where to start.","ask":"Which would you take?","o":[["The one that stretches a skill I lack.",["Growth","Mastery"],"Uncomfortable now, worth it later.","You chose the department that would stretch a skill you lack."],["The one with the clearest impact.",["Impact","Purpose"],"You want to point and say it mattered.","You chose the one with the clearest impact."],["The one with the most people involved.",["Collaboration","Integration"],"More moving parts, more interesting.","You chose the one involving the most people."],["The one I'd fully own.",["Autonomy","Achievement"],"Yours to shape, start to finish.","You chose the one you'd fully own."]]},
-{"c":5,"t":"Month 8. The rollout starts and it's messy. No clear brief, three departments expecting different things, deadline in three weeks.","ask":"What do you do first?","o":[["Start with what I have and go.",["Autonomy","Achievement"],"Momentum first, perfect plan later.","At the start of the rollout, you used what you had and kept going."],["Clarify what's expected.",["Structure"],"Better to ask now than redo later.","At the start of the rollout, you clarified what was expected."],["Find the right people.",["Collaboration"],"Angah again. Always the first call.","At the start of the rollout, you went to the right people first."],["Research until I understand it.",["Mastery","Analytical"],"You want the full picture first.","At the start of the rollout, you researched until you understood it."]]},
-{"c":5,"t":"Thursday's meeting: the three departments disagree on how the new process should run.","ask":"What's your instinct?","o":[["Look at the evidence.",["Analytical","Mastery"],"The data settles it, mostly.","When the teams disagreed, you looked at the evidence."],["Align everyone first.",["Collaboration","Belonging"],"Slower start, smoother finish.","When the teams disagreed, you aligned everyone first."],["Pick the fastest option.",["Achievement","Autonomy"],"You'd rather move than debate.","When the teams disagreed, you picked the fastest option."],["Ask if we're solving the wrong problem.",["SystemsThinking","Innovation"],"Turns out, sort of, yes.","When the teams disagreed, you asked if you were solving the wrong problem."]]},
-{"c":5,"t":"Puan Salwa backs the new process. But nobody owns it yet. Everyone's involved, nobody's driving.","ask":"What do you do?","o":[["Set clear responsibilities.",["Structure","Governance"],"Now it's obvious whose job is whose."],["Bring the stakeholders together.",["Collaboration","Influence"],"One meeting beats a week of emails."],["Remind everyone why it matters.",["Purpose","Impact"],"People move differently once they remember why."],["Just fix the obvious problem.",["Achievement","Autonomy"],"Done beats perfect today."]]},
-{"c":5,"t":"The rollout wraps up well. In the corridor, Puan Salwa: “Lepas ni saya nak bagi lebih tanggungjawab pada beberapa orang. Kamu nak berkembang ke arah mana?”","ask":"Which area would you grow into?","o":[["Trainer and coach: help people get good at the new way.",["CarSpecialist","PathCoachSME"],"You've quietly helped many already.","When Puan Salwa offered more responsibility, you chose training and coaching."],["Project lead: run the next rollout.",["CarPeopleLeader","PathProgrammeLead"],"Timelines, risks, check-ins. You'd enjoy it.","When Puan Salwa offered more responsibility, you chose project lead."],["Planner: use numbers to decide what's next.",["CarCrossFunctional","PathStrategist"],"You'd rather help choose the direction.","When Puan Salwa offered more responsibility, you chose planning."],["Change lead: help departments adjust.",["CarBuilder","PathChangeLead"],"Every rollout comes down to people.","When Puan Salwa offered more responsibility, you chose change lead."]]},
-{"c":6,"t":"Month 11. All three departments are on the new report. Over lunch, Kak Yana: “Kalau boleh design working environment sendiri, macam mana?”","ask":"Which sounds most like you?","o":[["Clear structure and direction.",["EnvStructured","Structure"],"You like knowing the shape of the week."],["Freedom to decide how I work.",["EnvAutonomous","Autonomy"],"Just don't hover."],["Fast-moving, new challenges.",["EnvDynamic","Growth"],"Boredom is the real risk."],["Close collaboration with people.",["EnvCollaborative","Collaboration"],"Same room beats same document."]]},
-{"c":6,"t":"She grins: “Kalau boleh pilih ketua sendiri, yang macam mana paling bagi kamu bekerja dengan baik?”","ask":"Which manager would you pick?","o":[["Clear about what's expected.",["EnvStructured","Structure"],"No guessing games."],["Trusts me, gives me space.",["EnvAutonomous","Autonomy"],"You do your best work unwatched."],["Coaches me and pushes me.",["EnvDynamic","Growth"],"You want someone who expects more."],["Works closely with me.",["EnvCollaborative","Collaboration"],"Shoulder to shoulder, not just check-ins."]]},
-{"c":6,"t":"A month later, Puan Salwa announces the whole company will move to the same system next year. Nobody knows what it means yet.","ask":"What do you want to know first?","o":[["What changes, and what I do differently.",["Structure","Achievement"],"You want the practical version."],["Why we're changing.",["Purpose","SystemsThinking"],"The reason matters more than the mechanics."],["What new possibilities it opens.",["Innovation","Autonomy"],"You're already three ideas ahead."],["How everyone moves together.",["Collaboration","Influence"],"You check on Angah first."]]}
+{k:'sit',t:"Your manager says: the Finance and Operations reports never match. Fix it, your call how.",ask:"First move?",o:[
+ ["Start sorting the files and see what shows up.",["Autonomy","Achievement"],"E"],
+ ["Question whether the report is even the right fix.",["Innovation","Mastery"],"V"],
+ ["Trace the raw data to see where it splits.",["Mastery","Analytical"],"A"],
+ ["Talk to whoever sends the numbers.",["Collaboration","Belonging"],"C"]]},
+{k:'duo',t:"Think about the kind of workplace where you do your best work.",ask:"Which sounds more like you?",o:[
+ ["I like clear structure and direction.",["EnvStructured","Structure"]],
+ ["I like freedom to decide how I work.",["EnvAutonomous","Autonomy"]]]},
+{k:'sit',t:"Two teams disagree on how a new process should run.",ask:"Your instinct?",o:[
+ ["Look at the evidence.",["Analytical","Mastery"],"A"],
+ ["Get everyone aligned first.",["Collaboration","Belonging"],"C"],
+ ["Pick the fastest option and move.",["Achievement","Autonomy"],"E"],
+ ["Ask if we're solving the wrong problem.",["SystemsThinking","Innovation"],"V"]]},
+{k:'sit',t:"You need to learn a tool you've never used, and you have two weeks.",ask:"How would you rather learn it?",o:[
+ ["Show me once, then let me try.",["LearnSocial","LearnExperiential"]],
+ ["Give me a step-by-step guide.",["LearnStructured"]],
+ ["Give me a real problem to solve with it.",["LearnExperiential"]],
+ ["Let me explore on my own.",["LearnSelfDirected"]]]},
+{k:'duo',t:"Same tool, new situation.",ask:"Which sounds more like you?",o:[
+ ["Give me a clear guide, one step at a time.",["LearnStructured"]],
+ ["Point me at the material and I'll work it out.",["LearnSelfDirected"]]]},
+{k:'sit',t:"You're handed a rollout with no clear brief and a three-week deadline.",ask:"What do you do first?",o:[
+ ["Start with what I have and go.",["Autonomy","Achievement"],"E"],
+ ["Research until I understand it properly.",["Mastery","Analytical"],"A"],
+ ["Find the right people to ask.",["Collaboration"],"C"],
+ ["Sketch what this could become.",["Innovation","SystemsThinking"],"V"]]},
+{k:'duo',t:"Picture two good days at work.",ask:"Which one is better?",o:[
+ ["Solving something hard, mostly on my own.",["Autonomy","Mastery"]],
+ ["Working through something with good people.",["Collaboration","Belonging"]]]},
+{k:'sit',t:"Your team must choose: patch the old template, or build one shared system.",ask:"Which way do you lean?",o:[
+ ["Patch it. Safe, clear, done in two weeks.",["Security","Structure"],"E"],
+ ["Build the shared system. It fixes this for good.",["Impact","RiskTaking"],"V"],
+ ["Give me a day to list the risks first.",["Analytical","Security"],"A"],
+ ["Ask each team which one they'd actually use.",["Collaboration","Influence"],"C"]]},
+{k:'sit',t:"A surprise customer audit takes over your whole week.",ask:"How do you handle it?",o:[
+ ["Adjust and move with it.",["Adaptability","Achievement"]],
+ ["Re-plan the week properly.",["Structure","Achievement"]],
+ ["Ask why it changed first.",["Purpose","Analytical"]],
+ ["Look for the opportunity in it.",["Innovation","Autonomy"]]]},
+{k:'duo',t:"A decision with real trade-offs.",ask:"Which sounds more like you?",o:[
+ ["Take the safe route we know works.",["Security","Structure"]],
+ ["Take the bigger bet with the bigger payoff.",["RiskTaking","Impact"]]]},
+{k:'sit',t:"Month-end is a week away. The numbers still don't match and people are tense.",ask:"What do you do?",o:[
+ ["Make a clear list of who does what.",["Structure","Achievement"],"E"],
+ ["Find the real cause of the mismatch.",["Mastery","Analytical"],"A"],
+ ["Get both sides on the same page.",["Collaboration","Belonging"],"C"],
+ ["Step back and look at the bigger picture.",["SystemsThinking","Impact"],"V"]]},
+{k:'duo',t:"One more about your environment.",ask:"Which sounds more like you?",o:[
+ ["I like fast-moving, new challenges.",["EnvDynamic","Growth"]],
+ ["I like working closely with people.",["EnvCollaborative","Collaboration"]]]},
+{k:'sit',t:"Announcement: the whole company will move to one new system next year.",ask:"What do you want to know first?",o:[
+ ["What changes, and what I do differently.",["Structure","Achievement"],"E"],
+ ["What new possibilities it opens.",["Innovation","Autonomy"],"V"],
+ ["Why we're changing, and what the data says.",["Purpose","Analytical"],"A"],
+ ["How everyone moves together.",["Collaboration","Influence"],"C"]]},
+{k:'top3',t:"Imagine you could pick the work that fills your next year.",ask:"Which three would you jump at?",o:[
+ ["Be the go-to person when something technical breaks.",["CarSpecialist","PathTechSpecialist"]],
+ ["Teach colleagues how to do something well.",["CarSpecialist","PathCoachSME"]],
+ ["Look after a small team's day to day.",["CarPeopleLeader","PathTeamLead"]],
+ ["Run a project from kickoff to handover.",["CarPeopleLeader","PathProgrammeLead"]],
+ ["Link two departments that don't understand each other.",["CarCrossFunctional","PathBizPartner"]],
+ ["Use numbers to help decide what we do next.",["CarCrossFunctional","PathStrategist"]],
+ ["Automate a tedious process so it runs itself.",["CarBuilder","PathDigitalBuilder"]],
+ ["Help a department adjust to a new way of working.",["CarBuilder","PathChangeLead"]]]},
+{k:'top3',t:"Last card. Think about what makes work worth it for you.",ask:"Which three matter most?",o:[
+ ["Knowing my work makes a real difference.",["Purpose"]],
+ ["Feeling stable and secure in my role.",["Security"]],
+ ["Being part of a team I trust.",["Belonging"]],
+ ["Having a say in where things go.",["Influence"]],
+ ["Building something that lasts after I move on.",["LastingValue"]],
+ ["Things done properly, fairly and by the book.",["Governance"]],
+ ["Getting to the truth of a hard problem.",["Analytical"]],
+ ["Seeing separate pieces come together.",["Integration"]]]}
 ];
-const FINAL = {c:0,t:"Three years on, {{NAME}}. The new system is just “how we do it” now. Puan Salwa calls you in: four paths are open.",
- ask:"Which door do you open?",
- o:[["THE EXPERT — become the person others bring hard problems to.",["CarSpecialist","Mastery"],"Deep, narrow, exactly where you want to be."],
-    ["THE CONNECTOR — work across people and functions to solve bigger problems.",["CarCrossFunctional","Influence"],"You'd rather be the glue than the specialist."],
-    ["THE BUILDER — create new things, turn ideas into reality.",["CarBuilder","Innovation"],"From zero to something — that's the part you love."],
-    ["THE LEADER — take responsibility for people and direction.",["CarPeopleLeader","Influence"],"Their growth becomes the scoreboard now."]]};
-const ASPIRE = {t:"Story done. Two last questions, about the real you.",
+const ASPIRE = {t:"Almost done. Two last questions, about the real you.",
  ask:"In your actual job, which areas would you most like to build over the next 12 months? Pick up to two."};
 const SUPPORT = {mentor:"A mentor or someone who's done it before",
  project:"A stretch project or assignment",
@@ -226,30 +266,16 @@ const SPECTRA = [
 
 // ---- Thinking style (Visionary / Executor / Analyst / Connector) ----
 // Applied only to decision-style scenes where each style has a natural option.
-// Index = position in Q; array = style per option A-D (null = option carries no thinking-style signal).
+// Options carry a style letter (V/E/A/C) as their third element.
 const THINK = {
  V:{tag:"ThinkVisionary",lbl:"Visionary",d:"You tend to start with the bigger picture — where this could go and what could be done differently — before settling the details."},
  E:{tag:"ThinkExecutor",lbl:"Executor",d:"You tend to think by doing — turning plans into progress quickly, and settling once there's something concrete moving."},
  A:{tag:"ThinkAnalyst",lbl:"Analyst",d:"You tend to think by understanding — looking for the evidence and root cause before you commit to a direction."},
  C:{tag:"ThinkConnector",lbl:"Connector",d:"You tend to think through people — reading the room, aligning perspectives and bringing others in to reach the best answer."}
 };
-const THINK_MAP = {
-  0:['E','V','C',null],
-  1:['A','C','V','E'],
-  5:['E','A','C','V'],
-  8:['E',null,'A','V'],
-  15:['E',null,'C','A'],
-  16:['A','C','E','V'],
-  17:[null,'C','V','E'],
-  21:['E','V',null,'C'],
-};
 const THINK_AVAIL = {};
 Object.keys(THINK).forEach(k=>THINK_AVAIL[THINK[k].tag]=0);
-Object.keys(THINK_MAP).forEach(qi=>{
-  THINK_MAP[qi].forEach((s,oi)=>{
-    if(s){ const t = THINK[s].tag; Q[qi].o[oi][1].push(t); THINK_AVAIL[t]++; }
-  });
-});
+Q.forEach(q=>q.o.forEach(o=>{ if(typeof o[2]==='string'){ const t=THINK[o[2]].tag; o[1].push(t); THINK_AVAIL[t]++; } }));
 function thinkScores(){
   return Object.keys(THINK).map(k=>{
     const t = THINK[k].tag, av = THINK_AVAIL[t]||1, n = tally[t]||0;
@@ -257,8 +283,7 @@ function thinkScores(){
   }).sort((a,b)=> b.pct-a.pct || b.n-a.n);
 }
 
-let flat = [];
-Q.forEach(q=>flat.push(q)); flat.push(FINAL);
+let flat = Q.slice();
 let idx=0, tally={}, statedThemes=[], supportKey=null, stage=document.getElementById('stage'), lastChapterShown=0, playerName="";
 let chapterLog={}, history=[], usedBack=new Set();
 
@@ -273,10 +298,10 @@ function nm(s){ s = s||'';
 function renderIntro(){
   stage.innerHTML = `<div class="scene" style="text-align:center">
     <div class="ask" style="font-size:22px;margin-bottom:8px;color:var(--accent);font-family:Georgia,serif;">YOUR NEXT CHAPTER</div>
-    <div class="narr" style="margin-bottom:10px;">You weren't looking for a new challenge.<br>But it found you anyway.</div>
-    <div class="narr" style="font-size:13px;font-style:normal;color:var(--sub);font-family:Arial,sans-serif;margin-bottom:22px;">${flat.length} quick scenes, about 6 minutes.<br>No right or wrong answers. Just pick what feels most like you.</div>
+    <div class="narr" style="margin-bottom:10px;">A few quick questions about how you work, think and grow.</div>
+    <div class="narr" style="font-size:13px;font-style:normal;color:var(--sub);font-family:Arial,sans-serif;margin-bottom:22px;">${flat.length} quick cards, about 4 minutes.<br>No right or wrong answers. Just pick what feels most like you.</div>
     <input type="text" id="nameInput" class="nameinput" placeholder="What should we call you?" maxlength="24">
-    <button class="cbtn" style="width:100%" onclick="startStory()">START YOUR DAY →</button>
+    <button class="cbtn" style="width:100%" onclick="startStory()">START →</button>
     </div>`;
   document.getElementById('nameInput').focus();
 }
@@ -285,61 +310,54 @@ function startStory(){
   playerName = v || 'you';
   render();
 }
-function render(){
-  const q = flat[idx];
-  if(q.c && q.c !== lastChapterShown){ lastChapterShown=q.c; return renderChapterCard(q.c); }
-  renderScene(q);
+let busy=false, picks=[];
+const KIND = {sit:'Situation', duo:'This or that', top3:'Pick three'};
+function render(){ busy=false; picks=[]; renderScene(flat[idx]); }
+function progress(){
+  let d=''; for(let i=0;i<flat.length;i++) d+=`<div class="dot2 ${i<idx?'done':''}"></div>`;
+  return `<div class="dots">${d}</div><div class="count">${idx+1} / ${flat.length}</div>`;
 }
-function renderChapterCard(cnum){
-  const ch = CH[cnum-1];
-  const prev = chapterLog[cnum-1];
-  let recap = '';
-  if(prev && prev.length){
-    recap = `<div class="clue"><b>Previously:</b> ${prev.slice(0,3).join(' ')}</div>`;
-  }
-  stage.innerHTML = `<div class="title-card">
-    <div class="time">${ch.w}</div>
-    <div class="emoji">${ch.e}</div><div class="num">Chapter ${ch.n}</div>
-    <h2>${ch.t}</h2><p>${nm(ch.s)}</p>
-    ${recap}
-    <button class="cbtn" onclick="dismissCard()">Continue</button></div>`;
-}
-function dismissCard(){ renderScene(flat[idx]); }
 function renderScene(q){
-  let dots=''; for(let i=0;i<CH.length;i++){ dots+=`<div class="dot2 ${i < (q.c||CH.length) ? 'done':''}"></div>`; }
   const letters=['A','B','C','D'];
   const canBack = history.length>0 && !usedBack.has(history[history.length-1].idx);
-  stage.innerHTML = `<div class="scene"><div class="dots">${dots}</div><div class="count">${idx+1} / ${flat.length}</div>
+  let body='';
+  if(q.k==='sit') body = q.o.map((o,i)=>`<button class="opt" onclick="choose(${i})"><b>${letters[i]}.</b>${o[0]}</button>`).join('');
+  else if(q.k==='duo') body = `<button class="opt" onclick="choose(0)">${q.o[0][0]}</button><div class="or">or</div><button class="opt" onclick="choose(1)">${q.o[1][0]}</button>`;
+  else body = q.o.map((o,i)=>`<button class="opt pk" data-i="${i}" onclick="togglePick(${i})"><b>•</b>${o[0]}</button>`).join('')
+    + `<div class="pkcount" id="pkCount">0 of 3 picked</div><button class="cbtn" id="pkGo" style="width:100%;opacity:.4" onclick="confirmPicks()">Continue →</button>`;
+  stage.innerHTML = `<div class="scene">${progress()}
     ${canBack ? `<button class="backbtn" onclick="goBack()">← Change my last answer</button>` : ''}
-    <div class="narr">${nm(q.t)}</div><div class="ask">${nm(q.ask)}</div>
-    ${q.o.map((o,i)=>`<button class="opt" onclick="choose(${i})"><b>${letters[i]}.</b>${o[0]}</button>`).join('')}
-    </div>`;
+    <div class="chip">${KIND[q.k]}</div><div class="narr">${nm(q.t)}</div><div class="ask">${nm(q.ask)}</div>${body}</div>`;
 }
+function advance(){ idx++; if(idx>=flat.length) renderAspiration(); else render(); }
 function choose(i){
-  const q = flat[idx];
-  const opt = q.o[i];
-  bump(opt[1]);
-  const hasRecap = !!(q.c && opt[3]);
-  if(hasRecap){ (chapterLog[q.c] = chapterLog[q.c]||[]).push(opt[3]); }
-  history.push({idx:idx, tags:opt[1], chapter:q.c, rec:hasRecap});
-  const txt = nm(opt[2]);
-  stage.innerHTML = `<div class="scene reaction" style="cursor:pointer"><div class="narr">${txt}</div><div class="tapnote">tap to continue</div></div>`;
-  idx++;
-  let moved = false, tm = null;
-  const go = ()=>{ if(moved) return; moved = true; clearTimeout(tm); if(idx>=flat.length) renderAspiration(); else render(); };
-  tm = setTimeout(go, Math.min(3000, 700 + txt.split(' ').length*180));
-  stage.firstChild.onclick = go;
+  if(busy) return; busy=true;
+  const opt = flat[idx].o[i];
+  bump(opt[1]); history.push({idx:idx, tags:opt[1].slice()});
+  const el = stage.querySelectorAll('.opt')[i]; if(el) el.classList.add('sel');
+  setTimeout(advance, 260);
+}
+function togglePick(i){
+  if(busy) return;
+  if(picks.includes(i)) picks = picks.filter(x=>x!==i);
+  else { picks.push(i); if(picks.length>3) picks.shift(); }
+  stage.querySelectorAll('.opt.pk').forEach(el=>el.classList.toggle('sel', picks.includes(+el.dataset.i)));
+  document.getElementById('pkCount').textContent = picks.length+' of 3 picked';
+  document.getElementById('pkGo').style.opacity = picks.length===3 ? 1 : .4;
+}
+function confirmPicks(){
+  if(busy || picks.length!==3) return; busy=true;
+  const q = flat[idx], tags=[];
+  picks.forEach(i=>q.o[i][1].forEach(t=>tags.push(t)));
+  bump(tags); history.push({idx:idx, tags:tags});
+  setTimeout(advance, 200);
 }
 function goBack(){
   if(history.length===0) return;
   const last = history[history.length-1];
   if(usedBack.has(last.idx)) return;
-  unbump(last.tags);
-  if(last.chapter && last.rec){ const log = chapterLog[last.chapter]; if(log && log.length) log.pop(); }
-  usedBack.add(last.idx);
-  history.pop();
-  idx = last.idx;
-  renderScene(flat[idx]);
+  unbump(last.tags); usedBack.add(last.idx); history.pop();
+  idx = last.idx; render();
 }
 function renderYearLater(){
   stage.innerHTML = `<div class="scene" style="text-align:center">
@@ -412,7 +430,7 @@ function renderResults(){
    <p><b>${CAR[carKey].lbl}.</b> ${CAR[carKey].d}${carSec ? ` There's also a pull toward <b>${CAR[carSec.k].lbl}</b>.` : ''}</p>
    <div style="margin-top:10px">${carOrdered.map((x,i)=>`<div class="spec"><div class="lbl"><span>${CAR[x.k].lbl}</span><span>${carTier(x,i)}</span></div>
     <div class="track"><div class="fill" style="width:${Math.max(x.pct,3)}%;${i===0?'background:var(--accent)':''}"></div></div></div>`).join('')}</div>
-   <p class="note">Based on your career-related choices in the story.</p>
+   <p class="note">Based on your career-related choices in the game.</p>
    <p style="margin-top:12px"><b>Closest growth direction: ${PATH.lbl}.</b> ${PATH.d}</p>
    <p class="note"><b>How this can happen at Aafiyat.</b> ${PATH.route}</p>
    <p class="note">${statedNote}</p></div>
