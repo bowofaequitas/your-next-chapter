@@ -67,9 +67,7 @@ export default {
           return json({ error: 'Invalid submission.' }, 400);
 
         await env.DB.prepare(
-          `INSERT OR IGNORE INTO responses
-           (id, batch, browser, name, company, department, role, answers, tally, summary, version, created_at)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
+          "INSERT OR IGNORE INTO responses (id, batch, browser, name, company, department, role, answers, tally, summary, version, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
         ).bind(
           id, batchId, clip(body.browser, 80), name, clip(p.company, 100), clip(p.department, 120), clip(p.role, 60),
           JSON.stringify(body.answers), JSON.stringify(body.tally), JSON.stringify(body.summary),
@@ -84,9 +82,7 @@ export default {
 
         if (path === '/api/admin/batches' && request.method === 'GET') {
           const { results } = await env.DB.prepare(
-            `SELECT b.id, b.name, b.closed, b.created_at,
-                    (SELECT COUNT(*) FROM responses r WHERE r.batch = b.id) AS responses
-             FROM batches b ORDER BY b.created_at DESC`
+            "SELECT b.id, b.name, b.closed, b.created_at, (SELECT COUNT(*) FROM responses r WHERE r.batch = b.id) AS responses FROM batches b ORDER BY b.created_at DESC"
           ).all();
           const g = await env.DB.prepare("SELECT COUNT(*) AS n FROM responses WHERE batch='general'").first();
           return json({ batches: results, general: g.n });
@@ -127,7 +123,7 @@ export default {
             return [r.name, r.company, r.department, r.role, s.careerLabel, s.pathLabel, (s.statedLabels || []).join(' + '),
               s.thinkLabel, s.learnLabel, s.energiseLabel, s.whyLabel, s.envLabel, s.supportLabel, r.created_at];
           });
-          const csv = [head, ...rows].map((r) => r.map(csvCell).join(',')).join('\r\n');
+          const csv = [head, ...rows].map((r) => r.map(csvCell).join(',')).join(decodeURIComponent("%0D%0A"));
           return new Response('﻿' + csv, {
             headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="your-next-chapter-' + batch.slice(0, 8) + '.csv"', 'Cache-Control': 'no-store' },
           });
