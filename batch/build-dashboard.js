@@ -10,7 +10,7 @@ if (!w.includes(marker)) throw new Error('marker missing');
 w = w.replace(marker, `    if (!path.startsWith('/api/')) {
       const file = (path === '/admin' || path === '/admin.html') ? 'batch/public/admin.html' : 'index.html';
       if (request.method !== 'GET') return new Response('Method not allowed', { status: 405 });
-      const r = await fetch('${RAW}' + file, { cf: { cacheTtl: 60, cacheEverything: true } });
+      const r = await fetch('${RAW}' + file + '?v=' + Math.floor(Date.now() / 60000), { cf: { cacheTtl: 60, cacheEverything: true } });
       if (!r.ok) return new Response('Page unavailable', { status: 502 });
       return new Response(r.body, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' } });
     }
