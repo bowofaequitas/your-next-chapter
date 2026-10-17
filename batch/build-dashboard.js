@@ -2,8 +2,10 @@
 // from the public repo, so the Worker stays small enough to paste into the Cloudflare dashboard editor.
 const fs = require('fs');
 let w = fs.readFileSync('src/worker.js', 'utf8');
+const lark = fs.readFileSync('src/lark.js', 'utf8').replace(/^export /gm, '');
+w = w.replace(/^import .*\n/m, lark + '\n');
 const RAW = 'https://raw.githubusercontent.com/bowofaequitas/your-next-chapter/main/';
-const marker = "    try {\n      // ---- public: is this batch link valid? ----";
+const marker = "    try {\n      // ---- public: who is this personal link for? ----";
 if (!w.includes(marker)) throw new Error('marker missing');
 w = w.replace(marker, `    if (!path.startsWith('/api/')) {
       const file = (path === '/admin' || path === '/admin.html') ? 'batch/public/admin.html' : 'index.html';

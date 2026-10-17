@@ -29,3 +29,9 @@ Open `/admin`, enter the key, create a batch and copy its link.
 - The game file is `../index.html`. `npm run build` copies it into `public/`.
 - Admin pages escape all text and the CSV export neutralises formula characters.
 - Results are for development conversations, not performance evaluation. The intro screen says so.
+
+## v17: personal links and Lark
+
+- Run `schema_v17.sql` once in the D1 console, then redeploy the Worker (`node build-dashboard.js` makes the paste-ready `worker-dashboard.js`).
+- Admin: upload a staff CSV (staff_id, name, company, department, role, directorship, optional cohort). Each person gets a personal link `/?t=TOKEN`. Directorship options show only for staff flagged "yes".
+- Lark: set Worker variable `LARK_CONFIG` (JSON) and secrets `LARK_APP_ID`, `LARK_APP_SECRET`. `mode` is `off` (default), `mock` or `live`. Table and field names go in `LARK_CONFIG` (see `src/lark.js` for the shape). Live mode is untested until real names and credentials exist.

@@ -4,85 +4,107 @@
 <style>
 :root{--bg:#0d0e14;--card:#171923;--ink:#f0efe9;--sub:#9a9fb0;--accent:#e0a951;--accent2:#7d8cff;--border:#2a2d3a}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Arial,sans-serif;padding:20px}
-.wrap{max-width:980px;margin:0 auto}h1{font:22px Georgia,serif;color:var(--accent);margin:0 0 4px}
+.wrap{max-width:1040px;margin:0 auto}h1{font:22px Georgia,serif;color:var(--accent);margin:0 0 4px}
 h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent2);margin:0 0 10px}
-.sub{color:var(--sub);margin-bottom:18px}.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--ink);padding:9px 11px;font-size:14px}
-button{background:var(--accent);color:#000;border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:13px}
-button.danger2{background:#c0392b;color:#fff;border:0}button.danger2:disabled{opacity:.4;cursor:not-allowed}.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}.mbox{max-width:420px;width:100%}.mbox p{margin:8px 0 12px}.mbox input{width:100%;margin-bottom:12px}.mbox .row{justify-content:flex-end}button.danger{color:#ff8b8b;border-color:#7a3b3b}button.sec{background:transparent;color:var(--ink);border:1px solid var(--border);font-weight:400}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top}th{color:var(--sub);font-weight:400;font-size:12px}
-.bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:13px}.bar .l{width:230px;flex-shrink:0}
+.sub,.note{color:var(--sub)}.sub{margin-bottom:18px}.note{font-size:13px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+input,select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--ink);padding:9px 11px;font-size:14px}
+button{background:var(--accent);color:#000;border:0;border-radius:8px;padding:8px 13px;font-weight:700;cursor:pointer;font-size:13px}
+button.sec{background:transparent;color:var(--ink);border:1px solid var(--border)}button.danger{background:transparent;color:#ff8b8b;border:1px solid #6b2a2a}
+button.danger2{background:#c0392b;color:#fff}button:disabled{opacity:.4;cursor:not-allowed}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top}th{color:var(--sub);font-weight:400;font-size:12px}
+.bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:13px}.bar .l{width:170px;flex-shrink:0}
 .bar .t{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}.bar .f{height:100%;background:var(--accent2)}
-.bar .n{width:28px;text-align:right;color:var(--sub)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.err{color:#ff8b8b;margin-top:8px}.hidden{display:none}.tag{font-size:11px;color:var(--sub);border:1px solid var(--border);border-radius:10px;padding:1px 7px;margin-left:6px}
-.num{background:none;border:0;border-bottom:1px dashed var(--accent2);color:inherit;font:inherit;padding:0 2px;cursor:pointer;min-width:24px}.num:hover{background:var(--border)}.filterbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.filterbar:empty{display:none}.note{color:var(--sub);font-size:12px}.scroll{overflow-x:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.err{color:#ff8b8b;margin-top:8px}.ok{color:#6fdc9a;margin-top:8px}.hidden{display:none}
+.tag{font-size:11px;color:var(--sub);border:1px solid var(--border);border-radius:10px;padding:1px 7px;margin-left:6px}
+.num{background:none;border:0;border-bottom:1px dashed var(--accent2);color:inherit;font:inherit;padding:0 2px;cursor:pointer;min-width:24px}.num:hover{background:var(--border)}
+.stat{font-size:26px;font-family:Georgia,serif;color:var(--accent)}.stats{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:6px}
+.filterbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
 </style></head><body><div class="wrap">
-<h1>Your Next Chapter · L&amp;D admin</h1><div class="sub">Batch links and group view. Results are for development conversations, not performance evaluation.</div>
+<h1>Your Next Chapter · L&amp;D admin</h1><div class="sub">Personal links by staff ID, and what staff want to grow into. For development conversations, not performance evaluation.</div>
 
 <div class="card" id="login"><h2>Admin key</h2><div class="row"><input type="password" id="key" placeholder="Admin key" autocomplete="off"><button id="go">Open</button></div><div class="err" id="loginErr"></div></div>
 
 <div id="app" class="hidden">
- <div class="card"><h2>New batch</h2><div class="row"><input id="bname" placeholder="e.g. Pilot: Finance and HR, Oct 2026" size="40" maxlength="80"><button id="create">Create link</button></div><div class="err" id="createErr"></div></div>
- <div class="card"><h2>Batches</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Responses</th><th>Status</th><th></th></tr></thead><tbody id="batches"></tbody></table></div></div>
- <div id="detail" class="hidden">
-  <div class="card"><div class="row" style="justify-content:space-between"><h2 id="dtitle" style="margin:0"></h2><div class="row"><button class="sec" id="refresh">Refresh</button><button class="sec danger" id="clearAll">Clear all responses</button><button id="csv">Download CSV</button></div></div><div class="note" id="dnote"></div></div>
-  <div class="card"><h2>Learning plan view</h2><div class="note">Per growth direction: how many people, who they are by area, what support they asked for, and the suggested way to deliver the learning. Use it to plan roadmaps and materials. Small numbers are indicative only.</div><div class="scroll"><table><thead><tr><th>Growth direction</th><th>People</th><th>Areas of work</th><th>Support asked</th><th>How they learn best</th><th>Suggested format</th></tr></thead><tbody id="plan"></tbody></table></div></div>
-  <div class="grid" id="charts"></div>
-  <div class="card" id="whoCard"><h2>Respondents</h2><div class="filterbar" id="filterBar"></div><div class="scroll"><table><thead><tr><th></th><th>Name</th><th>Department</th><th>Role</th><th>Growth direction</th><th>Also close to</th><th>Thinking</th><th>Stated focus</th><th>Area of work</th><th>Support</th></tr></thead><tbody id="people"></tbody></table></div></div>
+ <div class="card"><h2>Staff list and personal links</h2>
+  <div class="note">Upload a CSV with these headers: <b>staff_id, name, company, department, role, directorship</b> (yes for the targeted HODs). Optional: <b>cohort</b>. Uploading again updates people and keeps their existing links.</div>
+  <div class="row"><input type="file" id="csv" accept=".csv,text/csv"><button id="imp" disabled>Import</button><button class="sec" id="dlLinks">Download links CSV</button></div>
+  <div id="impMsg"></div>
+  <div class="stats" style="margin-top:14px"><div><div class="stat" id="sStaff">0</div><div class="note">staff</div></div><div><div class="stat" id="sDone">0</div><div class="note">answered</div></div><div><div class="stat" id="sPend">0</div><div class="note">not yet</div></div></div>
+  <div class="filterbar"><input id="q" placeholder="Search name or staff ID"><select id="st"><option value="">All</option><option value="done">Answered</option><option value="pending">Not yet</option></select></div>
+  <div class="scroll"><table><thead><tr><th>Staff ID</th><th>Name</th><th>Department</th><th>Role</th><th>Status</th><th>Lark</th><th></th></tr></thead><tbody id="staff"></tbody></table></div>
  </div>
+ <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">What staff want</h2><div class="row"><button class="sec" id="refresh">Refresh</button><button class="sec" id="exp">Download results CSV</button><button class="danger" id="clearAll">Clear all responses</button></div></div>
+  <div class="note" style="margin-top:8px">Click a number to see who it is.</div><div class="grid" id="charts"></div></div>
+ <div class="card"><h2>Respondents</h2><div class="filterbar" id="filterBar"></div><div class="scroll"><table><thead><tr><th></th><th>Staff ID</th><th>Name</th><th>Department</th><th>Aspiration</th><th>Learning style</th><th>Motivation</th><th>Development wishes</th><th>Version</th><th>Date</th></tr></thead><tbody id="who"></tbody></table></div></div>
 </div></div>
 <script>
-const $=id=>document.getElementById(id);let KEY='',CUR=null,GEN=0;
+const $=id=>document.getElementById(id);let KEY='',STAFF=[],RESP=[],ROWS=[],FILTER=null;
 try{KEY=sessionStorage.getItem('yncKey')||''}catch{}
 const el=(t,txt,cls)=>{const e=document.createElement(t);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e};
 async function api(path,opt={}){const r=await fetch(path,{...opt,headers:{...(opt.headers||{}),Authorization:'Bearer '+KEY,'Content-Type':'application/json'}});
  if(r.status===401)throw Error('Wrong admin key.');const d=r.headers.get('content-type')?.includes('json')?await r.json():await r.blob();if(!r.ok)throw Error(d.error||'Request failed');return d}
-async function enter(){try{const d=await api('/api/admin/batches');try{sessionStorage.setItem('yncKey',KEY)}catch{}$('login').classList.add('hidden');$('app').classList.remove('hidden');GEN=d.general;drawBatches(d.batches)}catch(e){$('loginErr').textContent=e.message}}
-$('go').onclick=()=>{KEY=$('key').value;enter()};$('key').onkeydown=e=>{if(e.key==='Enter')$('go').click()};if(KEY)enter();
-function link(id){return location.origin+'/?batch='+id}
-function drawBatches(list){const tb=$('batches');tb.replaceChildren();
- const rows=[{id:'general',name:'General (no batch link)',closed:0,responses:GEN}].concat(list);
- rows.forEach(b=>{const tr=el('tr');tr.append(el('td',b.name),el('td',b.responses),el('td',b.closed?'Closed':'Open'));const td=el('td');td.className='row';
-  const v=el('button','View','sec');v.onclick=()=>show(b);td.append(v);
-  if(b.id!=='general'){const c=el('button','Copy link','sec');c.onclick=async()=>{try{await navigator.clipboard.writeText(link(b.id));c.textContent='Copied'}catch{prompt('Copy this link',link(b.id))}};
-   const t=el('button',b.closed?'Reopen':'Close','sec');t.onclick=async()=>{await api('/api/admin/batches/'+b.id+'/'+(b.closed?'open':'close'),{method:'POST'});enter()};td.append(c,t)}
-  tr.append(td);tb.append(tr)})}
-$('create').onclick=async()=>{$('createErr').textContent='';try{const n=$('bname').value.trim();if(!n)throw Error('Give the batch a name.');await api('/api/admin/batches',{method:'POST',body:JSON.stringify({name:n})});$('bname').value='';enter()}catch(e){$('createErr').textContent=e.message}};
-const NA='Not answered';
-const vals=(r,fn)=>{let v=fn(r);v=Array.isArray(v)?v:[v];v=v.filter(x=>x!=null&&String(x).trim()!=='');return v.length?v.map(String):[NA]};
-function tally(list,fn){const m={};list.forEach(r=>vals(r,fn).forEach(k=>{m[k]=(m[k]||0)+1}));return Object.entries(m).sort((a,b)=>b[1]-a[1])}
-let ALL=[],FILT=null;
-function numBtn(n,title,key,fn){const b=el('button',n,'num');b.title='Show who';b.onclick=()=>{FILT={title,key,fn};drawPeople();$('whoCard').scrollIntoView({behavior:'smooth',block:'start'})};return b}
-function chart(title,fn,total){const c=el('div',null,'card');c.append(el('h2',title));tally(ALL,fn).forEach(([k,n])=>{const b=el('div',null,'bar');const t=el('div',null,'t'),f=el('div',null,'f');f.style.width=(total?n/total*100:0)+'%';t.append(f);b.append(el('div',k,'l'),t,numBtn(n,title,k,fn));c.append(b)});return c}
-function drawPeople(){const tb=$('people');tb.replaceChildren();const rows=FILT?ALL.filter(r=>vals(r,FILT.fn).includes(FILT.key)):ALL;
- const fb=$('filterBar');fb.replaceChildren();
- if(FILT){const t=el('span',rows.length+' of '+ALL.length+' respondents: '+FILT.title+' = '+FILT.key);const x=el('button','Show everyone','sec');x.onclick=()=>{FILT=null;drawPeople()};fb.append(t,x)}
- rows.forEach(r=>{const tr=el('tr');const dc=el('td');const db=el('button','Delete','sec danger');db.onclick=()=>delOne(r);dc.append(db);tr.append(dc,el('td',r.name),el('td',r.department||''),el('td',r.role||''),el('td',r.summary.pathLabel||''),el('td',r.summary.altPathLabel||''),el('td',r.summary.thinkLabel||''),el('td',(r.summary.statedLabels||[]).join(' + ')),el('td',r.summary.functionLabel||''),el('td',r.summary.supportLabel||''));tb.append(tr)})}
-async function show(b){CUR=b;FILT=null;$('detail').classList.remove('hidden');$('dtitle').textContent=b.name;$('dnote').textContent=b.id==='general'?'Responses submitted without a batch link.':'Link: '+link(b.id);
- const d=await api('/api/admin/responses?batch='+encodeURIComponent(b.id));ALL=d.responses;const R=ALL;const ch=$('charts');ch.replaceChildren();
- if(!R.length){ch.append(el('div','No responses yet.','card'));$('people').replaceChildren();$('plan').replaceChildren();$('filterBar').replaceChildren();return}
- const N=R.length;
- ch.append(chart('Growth direction (inferred)',r=>r.summary.pathLabel,N),chart('Career pull',r=>r.summary.careerLabel,N),
-  chart('Thinking style (natural lean)',r=>r.summary.thinkLabel,N),chart('Learning style',r=>r.summary.learnLabel,N),
-  chart('Stated focus (up to 2 each)',r=>r.summary.statedLabels||['Not sure yet'],N),
-  chart('Support wanted',r=>r.summary.supportLabel,N),chart('Area of work',r=>r.summary.functionLabel,N),chart('Role',r=>r.role,N),chart('Department',r=>r.department,N));
- drawPeople();drawPlan(R)}
-const FORMAT={Structured:'Cohort programme or certification, with milestones',Experiential:'Stretch assignments with a short debrief',Social:'Mentoring and shadowing',"Self-directed":'Curated resource list with monthly check-ins'};
-function topN(list,n){return tally(list,x=>x).slice(0,n).filter(x=>x[0]!=='Not answered').map(x=>x[0]+' ('+x[1]+')').join(', ')}
-function drawPlan(R){const tb=$('plan');tb.replaceChildren();const g={};R.forEach(r=>{const k=r.summary.pathLabel||NA;(g[k]=g[k]||[]).push(r.summary)});
- Object.entries(g).sort((a,b)=>b[1].length-a[1].length).forEach(([k,L])=>{const tr=el('tr');const l=tally(L,s=>s.learnLabel)[0];
-  const pf=r=>r.summary.pathLabel;const cn=el('td');cn.append(numBtn(L.length,'Growth direction',k==='Not answered'?NA:k,pf));tr.append(el('td',k),cn,el('td',topN(L.map(s=>s.functionLabel),3)||'-'),el('td',topN(L.map(s=>s.supportLabel),2)||'-'),el('td',topN(L.map(s=>s.learnLabel),2)||'-'),el('td',l?FORMAT[l[0]]||'':''));tb.append(tr)})}
-function ask(title,msg,needText,okLabel){return new Promise(res=>{const ov=el('div',null,'ov');const bx=el('div',null,'card mbox');bx.append(el('h2',title),el('p',msg));let inp=null;
- if(needText){inp=el('input');inp.placeholder='Type: '+needText;bx.append(inp)}
- const row=el('div',null,'row');const no=el('button','Cancel','sec');const ok=el('button',okLabel||'Delete','danger2');if(needText)ok.disabled=true;
- const close=v=>{ov.remove();res(v)};no.onclick=()=>close(false);ok.onclick=()=>close(true);if(inp)inp.oninput=()=>{ok.disabled=inp.value.trim()!==needText};
- row.append(no,ok);bx.append(row);ov.append(bx);document.body.append(ov);(inp||no).focus()})}
-async function delOne(r){if(!await ask('Delete this response?','Delete the response from '+r.name+'. This cannot be undone.'))return;try{await api('/api/admin/responses/delete',{method:'POST',body:JSON.stringify({id:r.id})});await show(CUR);enter()}catch(e){await ask('Could not delete',e.message,null,'OK')}}
-$('clearAll').onclick=async()=>{if(!CUR)return;if(!await ask('Clear all responses?','This permanently deletes ALL responses in this batch. Type the batch name to confirm.',CUR.name,'Delete all'))return;try{const d=await api('/api/admin/batches/'+encodeURIComponent(CUR.id)+'/clear',{method:'POST'});await show(CUR);enter();await ask('Done',d.deleted+' response(s) deleted.',null,'OK')}catch(e){await ask('Could not delete',e.message,null,'OK')}};
-$('refresh').onclick=()=>CUR&&show(CUR);
-$('csv').onclick=async()=>{const d=await api('/api/admin/responses?batch='+encodeURIComponent(CUR.id));const cell=v=>{let t=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(t))t="'"+t;return '"'+t.replace(/"/g,'""')+'"'};
- const head=['Name','Company','Department','Role','Area of work','Career pull','Growth direction','Also close to','Stated focus','Thinking style','Learning style','Drive','Why','Environment','Support wanted','Submitted'];
- const rows=d.responses.map(r=>{const s=r.summary||{};return [r.name,r.company,r.department,r.role,s.functionLabel,s.careerLabel,s.pathLabel,s.altPathLabel,(s.statedLabels||[]).join(' + '),s.thinkLabel,s.learnLabel,s.energiseLabel,s.whyLabel,s.envLabel,s.supportLabel,r.created_at]});
- const text='\ufeff'+[head,...rows].map(r=>r.map(cell).join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.download='your-next-chapter.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+function ask(msg,confirmWord){return new Promise(res=>{const ov=el('div',null,'ov'),b=el('div',null,'card');b.style.maxWidth='420px';b.append(el('p',msg));
+ let inp;if(confirmWord){inp=el('input');inp.placeholder='Type '+confirmWord;b.append(inp);}
+ const row=el('div',null,'row');row.style.marginTop='12px';const ok=el('button','Confirm','danger2'),no=el('button','Cancel','sec');
+ if(inp){ok.disabled=true;inp.oninput=()=>ok.disabled=inp.value.trim().toUpperCase()!==confirmWord;}
+ ok.onclick=()=>{ov.remove();res(true)};no.onclick=()=>{ov.remove();res(false)};row.append(ok,no);b.append(row);ov.append(b);document.body.append(ov);(inp||ok).focus();});}
+const link=s=>location.origin+'/?t='+s.token;
+function parseCSV(t){const rows=[];let r=[],c='',q=false;t=t.replace(/^﻿/,'');
+ for(let i=0;i<t.length;i++){const ch=t[i];
+  if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
+  else if(ch=='"')q=true;else if(ch==','||ch==';'||ch=='\t'){r.push(c);c=''}
+  else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;r.push(c);c='';if(r.some(x=>x.trim()))rows.push(r);r=[]}
+  else c+=ch}
+ r.push(c);if(r.some(x=>x.trim()))rows.push(r);return rows}
+const norm=h=>h.toLowerCase().replace(/[^a-z]/g,'');
+const MAP={staffid:'staff_id',id:'staff_id',employeeid:'staff_id',name:'name',fullname:'name',company:'company',department:'department',dept:'department',role:'role',level:'role',directorship:'directorship',director:'directorship',cohort:'cohort',batch:'cohort'};
+function toRows(text){const t=parseCSV(text);if(t.length<2)return[];const keys=t[0].map(h=>MAP[norm(h)]||'');
+ return t.slice(1).map(r=>{const o={};keys.forEach((k,i)=>{if(k)o[k]=(r[i]||'').trim()});return o}).filter(o=>o.staff_id&&o.name)}
+let PENDING=[];
+$('csv').onchange=async e=>{const f=e.target.files[0];$('impMsg').textContent='';PENDING=[];$('imp').disabled=true;if(!f)return;
+ PENDING=toRows(await f.text());if(!PENDING.length){$('impMsg').className='err';$('impMsg').textContent='No usable rows. Check that the first row has staff_id and name headers.';return}
+ const dirs=PENDING.filter(r=>/^(1|y|yes|true|ya)$/i.test(r.directorship||'')).length;
+ $('impMsg').className='note';$('impMsg').textContent=PENDING.length+' people found, '+dirs+' flagged for Directorship.';$('imp').disabled=false};
+$('imp').onclick=async()=>{try{const d=await api('/api/admin/staff/import',{method:'POST',body:JSON.stringify({rows:PENDING})});
+ $('impMsg').className='ok';$('impMsg').textContent='Added '+d.added+', updated '+d.updated+(d.skipped?', skipped '+d.skipped:'')+'.';$('imp').disabled=true;load()}catch(e){$('impMsg').className='err';$('impMsg').textContent=e.message}};
+function csvOut(rows){return '﻿'+rows.map(r=>r.map(v=>{let s=String(v??'');if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}).join(',')).join('\r\n')}
+function save(text,name){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.download=name;a.click()}
+$('dlLinks').onclick=()=>save(csvOut([['Staff ID','Name','Department','Link']].concat(STAFF.map(s=>[s.staff_id,s.name,s.department,link(s)]))),'your-next-chapter-links.csv');
+$('exp').onclick=async()=>{try{const b=await api('/api/admin/export.csv');save(await b.text(),'your-next-chapter-results.csv')}catch(e){alert(e.message)}};
+function drawStaff(){const q=$('q').value.toLowerCase(),f=$('st').value,tb=$('staff');tb.innerHTML='';
+ STAFF.filter(s=>(!q||(s.name+s.staff_id).toLowerCase().includes(q))&&(!f||(f=='done')==!!s.answered_at)).forEach(s=>{const tr=el('tr');
+  tr.append(el('td',s.staff_id),el('td',s.name+(s.directorship?' (Directorship)':'')),el('td',s.department),el('td',s.role),
+   el('td',s.answered_at?'Answered '+s.answered_at.slice(0,10):'Not yet'),el('td',s.lark_status||''));
+  const a=el('td');const cp=el('button','Copy link','sec');cp.onclick=async()=>{try{await navigator.clipboard.writeText(link(s));cp.textContent='Copied'}catch{prompt('Copy this link',link(s))}};
+  const nl=el('button','New link','sec');nl.onclick=async()=>{if(await ask('Make a new link for '+s.name+'? The old link will stop working.')){await api('/api/admin/staff/new-link',{method:'POST',body:JSON.stringify({staff_id:s.staff_id})});load()}};
+  const dl=el('button','Remove','danger');dl.onclick=async()=>{if(await ask('Remove '+s.name+' from the staff list? Their link stops working.')){await api('/api/admin/staff/delete',{method:'POST',body:JSON.stringify({staff_id:s.staff_id})});load()}};
+  a.append(cp,' ',nl,' ',dl);tr.append(a);tb.append(tr)});
+ $('sStaff').textContent=STAFF.length;const d=STAFF.filter(s=>s.answered_at).length;$('sDone').textContent=d;$('sPend').textContent=STAFF.length-d}
+$('q').oninput=drawStaff;$('st').onchange=drawStaff;
+const cnt=(rows,fn)=>{const m={};rows.forEach(r=>[].concat(fn(r)).filter(Boolean).forEach(k=>m[k]=(m[k]||0)+1));return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+function chart(title,entries,field){const c=el('div',null,'card');c.style.margin=0;c.append(el('h2',title));const mx=Math.max(1,...entries.map(e=>e[1]));
+ if(!entries.length)c.append(el('div','No data yet.','note'));
+ entries.forEach(([k,n])=>{const b=el('div',null,'bar');b.append(el('span',k,'l'));const t=el('span',null,'t'),f=el('span',null,'f');f.style.width=(n/mx*100)+'%';t.append(f);
+  const nb=el('button',String(n),'num');nb.onclick=()=>{FILTER={field,k};drawWho();$('filterBar').scrollIntoView({behavior:'smooth'})};b.append(t,nb);c.append(b)});return c}
+const F={asp:r=>r.summary.roleLabel,learn:r=>r.summary.learnLabel,why:r=>r.summary.whyLabels||[],area:r=>r.summary.areaLabels||[],sup:r=>r.summary.supportLabel};
+function drawCharts(){const g=$('charts');g.innerHTML='';
+ g.append(chart('Aspiration',cnt(RESP,F.asp),'asp'),chart('Learning style',cnt(RESP,F.learn),'learn'),chart('Motivation (top two each)',cnt(RESP,F.why),'why'),
+  chart('Development wishes',cnt(RESP,F.area),'area'),chart('Support wanted',cnt(RESP,F.sup),'sup'))}
+function drawWho(){const bar=$('filterBar');bar.innerHTML='';let rows=RESP;
+ if(FILTER){rows=RESP.filter(r=>[].concat(F[FILTER.field](r)).includes(FILTER.k));const b=el('button','Show everyone','sec');b.onclick=()=>{FILTER=null;drawWho()};bar.append(el('span','Showing '+rows.length+': '+FILTER.k),b)}
+ else bar.append(el('span',RESP.length+' respondents','note'));
+ const tb=$('who');tb.innerHTML='';rows.forEach(r=>{const s=r.summary,tr=el('tr');const d=el('td'),x=el('button','Delete','danger');
+  x.onclick=async()=>{if(await ask('Delete the response from '+r.name+'? This cannot be undone.')){await api('/api/admin/responses/delete',{method:'POST',body:JSON.stringify({id:r.id})});load()}};d.append(x);
+  tr.append(d,el('td',r.staff_id||''),el('td',r.name),el('td',r.department),el('td',s.roleLabel+(s.roleSecondLabel?' (also '+s.roleSecondLabel+')':'')),el('td',s.learnLabel),
+   el('td',(s.whyLabels||[]).join(', ')),el('td',(s.areaLabels||[]).join(', ')+(s.wish?' · '+s.wish:'')),el('td',r.survey_version||''),el('td',(r.created_at||'').slice(0,10)));tb.append(tr)})}
+$('refresh').onclick=load;
+$('clearAll').onclick=async()=>{if(await ask('Delete ALL responses? Staff list and links stay. This cannot be undone.','DELETE')){await api('/api/admin/responses/clear',{method:'POST',body:'{}'});load()}};
+async function load(){try{const [s,r]=await Promise.all([api('/api/admin/staff'),api('/api/admin/responses')]);STAFF=s.staff;RESP=r.responses;drawStaff();drawCharts();drawWho()}catch(e){$('loginErr').textContent=e.message;$('app').classList.add('hidden');$('login').classList.remove('hidden')}}
+$('go').onclick=async()=>{KEY=$('key').value.trim();$('loginErr').textContent='';try{await api('/api/admin/staff');try{sessionStorage.setItem('yncKey',KEY)}catch{}
+ $('login').classList.add('hidden');$('app').classList.remove('hidden');load()}catch(e){$('loginErr').textContent=e.message}};
+if(KEY){$('login').classList.add('hidden');$('app').classList.remove('hidden');load()}
 </script></body></html>
