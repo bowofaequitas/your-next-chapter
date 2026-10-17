@@ -1,9 +1,9 @@
 // Lark Base connector. Everything table- or field-specific lives in LARK_CONFIG, so connecting
 // the real Learning Passport means filling in names, not changing code.
-// mode: "off" (default) | "mock" (pretend, no network) | "live"
+// mode: "mock" (default: pretend, no network) | "off" | "live"
 // Secrets (set as Worker secrets, never in the repo): LARK_APP_ID, LARK_APP_SECRET.
 const DEFAULT_CONFIG = {
-  mode: 'off',
+  mode: 'mock',
   baseUrl: 'https://open.larksuite.com',
   appToken: '',                       // the Learning Passport Base's app token
   // Employee information: staff are matched by email (the table has Name, Owner, Superior, Status, EMAIL, Office, Department).
