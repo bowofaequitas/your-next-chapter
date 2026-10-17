@@ -409,7 +409,7 @@ function renderWishes(){
   lastPct=100; areaPicks=[];
   stage.innerHTML=`<div class="card slide"><div class="qhead"><div class="qicon">${iconSVG('star',5)}</div><div class="kind">Almost done</div></div>
    <h2 class="ask">${ASPIRE.ask}</h2>
-   ${Object.keys(AREAS).map(k=>`<button class="opt pk area" data-k="${k}" onclick="toggleArea('${k}')"><b class="tick"></b><span><b>${AREAS[k].lbl}</b><br><small>${AREAS[k].d}</small></span></button>`).join('')}
+   ${Object.keys(AREAS).map(k=>`<button class="opt pk area" data-k="${k}" onclick="toggleArea('${k}')"><b class="tick"></b><span><strong>${AREAS[k].lbl}</strong><br><small>${AREAS[k].d}</small></span></button>`).join('')}
    <label class="flabel" for="wish">Anything specific you'd like to learn? <span class="fine">(optional)</span></label>
    <textarea class="field" id="wish" rows="2" maxlength="160" placeholder="For example: presenting to senior leaders"></textarea>
    <div class="pkcount" id="arCount">0 of 3 picked</div>
