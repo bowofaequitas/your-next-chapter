@@ -30,7 +30,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
 
 <div id="app" class="hidden">
  <div class="card"><h2>Staff list and personal links</h2>
-  <div class="note">Upload a CSV with these headers: <b>staff_id, name, company, department, role, directorship</b> (yes for the targeted HODs). Optional: <b>cohort</b>. Uploading again updates people and keeps their existing links.</div>
+  <div class="note">Upload a CSV with these headers: <b>staff_id, name, email, company, department, role, directorship</b> (yes for the targeted HODs). Email must match the EMAIL in Employee information (that is how results are linked). Optional: <b>cohort</b>. Uploading again updates people and keeps their existing links.</div>
   <div class="row"><input type="file" id="csv" accept=".csv,text/csv"><button id="imp" disabled>Import</button><button class="sec" id="dlLinks">Download links CSV</button></div>
   <div id="impMsg"></div>
   <div class="stats" style="margin-top:14px"><div><div class="stat" id="sStaff">0</div><div class="note">staff</div></div><div><div class="stat" id="sDone">0</div><div class="note">answered</div></div><div><div class="stat" id="sPend">0</div><div class="note">not yet</div></div></div>
@@ -61,7 +61,7 @@ function parseCSV(t){const rows=[];let r=[],c='',q=false;t=t.replace(/^﻿/,'');
   else c+=ch}
  r.push(c);if(r.some(x=>x.trim()))rows.push(r);return rows}
 const norm=h=>h.toLowerCase().replace(/[^a-z]/g,'');
-const MAP={staffid:'staff_id',id:'staff_id',employeeid:'staff_id',name:'name',fullname:'name',company:'company',department:'department',dept:'department',role:'role',level:'role',directorship:'directorship',director:'directorship',cohort:'cohort',batch:'cohort'};
+const MAP={staffid:'staff_id',id:'staff_id',employeeid:'staff_id',name:'name',email:'email',emailaddress:'email',fullname:'name',company:'company',department:'department',dept:'department',role:'role',level:'role',directorship:'directorship',director:'directorship',cohort:'cohort',batch:'cohort'};
 function toRows(text){const t=parseCSV(text);if(t.length<2)return[];const keys=t[0].map(h=>MAP[norm(h)]||'');
  return t.slice(1).map(r=>{const o={};keys.forEach((k,i)=>{if(k)o[k]=(r[i]||'').trim()});return o}).filter(o=>o.staff_id&&o.name)}
 let PENDING=[];

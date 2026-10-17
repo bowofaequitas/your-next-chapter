@@ -47,7 +47,7 @@ export default {
         const s = await staffByToken(env, url.searchParams.get('t'));
         if (!s) return json({ error: 'Not found' }, 404);
         try {
-          const g = await readGaps(env, s.staff_id);
+          const g = await readGaps(env, s);
           return g ? json(g) : json({ gaps: null });
         } catch (e) { console.error(e); return json({ gaps: null }); }
       }
@@ -87,7 +87,7 @@ export default {
 
         if (path === '/api/admin/staff' && request.method === 'GET') {
           const { results } = await env.DB.prepare(
-            'SELECT s.staff_id, s.token, s.name, s.company, s.department, s.role, s.directorship, s.cohort, ' +
+            'SELECT s.staff_id, s.token, s.name, s.email, s.company, s.department, s.role, s.directorship, s.cohort, ' +
             '(SELECT created_at FROM responses r WHERE r.staff_id = s.staff_id ORDER BY created_at DESC LIMIT 1) AS answered_at, ' +
             '(SELECT lark_status FROM responses r WHERE r.staff_id = s.staff_id ORDER BY created_at DESC LIMIT 1) AS lark_status ' +
             'FROM staff s ORDER BY s.name'
@@ -105,12 +105,12 @@ export default {
             if (!sid || !name) { skipped++; continue; }
             const ex = await env.DB.prepare('SELECT staff_id FROM staff WHERE staff_id = ?').bind(sid).first();
             if (ex) {
-              await env.DB.prepare('UPDATE staff SET name=?, company=?, department=?, role=?, directorship=?, cohort=? WHERE staff_id=?')
-                .bind(name, clip(r.company, 100), clip(r.department, 120), clip(r.role, 60), yes(r.directorship) ? 1 : 0, clip(r.cohort, 80), sid).run();
+              await env.DB.prepare('UPDATE staff SET email=?, name=?, company=?, department=?, role=?, directorship=?, cohort=? WHERE staff_id=?')
+                .bind(clip(r.email, 120), name, clip(r.company, 100), clip(r.department, 120), clip(r.role, 60), yes(r.directorship) ? 1 : 0, clip(r.cohort, 80), sid).run();
               updated++;
             } else {
-              await env.DB.prepare('INSERT INTO staff (staff_id, token, name, company, department, role, directorship, cohort, created_at) VALUES (?,?,?,?,?,?,?,?,?)')
-                .bind(sid, newToken(), name, clip(r.company, 100), clip(r.department, 120), clip(r.role, 60), yes(r.directorship) ? 1 : 0, clip(r.cohort, 80), now).run();
+              await env.DB.prepare('INSERT INTO staff (staff_id, token, email, name, company, department, role, directorship, cohort, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)')
+                .bind(sid, newToken(), clip(r.email, 120), name, clip(r.company, 100), clip(r.department, 120), clip(r.role, 60), yes(r.directorship) ? 1 : 0, clip(r.cohort, 80), now).run();
               added++;
             }
           }

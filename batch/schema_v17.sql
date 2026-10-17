@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS staff (
   staff_id TEXT PRIMARY KEY,
   token TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
+  email TEXT NOT NULL DEFAULT '',
   company TEXT NOT NULL DEFAULT '',
   department TEXT NOT NULL DEFAULT '',
   role TEXT NOT NULL DEFAULT '',

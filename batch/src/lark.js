@@ -6,12 +6,15 @@ const DEFAULT_CONFIG = {
   mode: 'off',
   baseUrl: 'https://open.larksuite.com',
   appToken: '',                       // the Learning Passport Base's app token
-  employee: { tableId: '', staffIdField: 'Staff ID' },
+  // Employee information: staff are matched by email (the table has Name, Owner, Superior, Status, EMAIL, Office, Department).
+  employee: { tableId: '', matchField: 'EMAIL', nameField: 'Name' },
   results:  { tableId: '', fields: {  // leave a field name empty to skip it
     employeeLink: 'Employee', staffId: 'Staff ID', aspiration: 'Aspiration', aspirationSecond: '',
     learningStyle: 'Learning style', motivation: 'Motivation', developmentWishes: 'Development wishes',
     wishNote: 'Wish note', support: 'Support wanted', surveyVersion: 'Survey version', surveyDate: 'Survey date' } },
-  gaps: { tableId: '', staffIdField: 'Staff ID', fields: { competency: 'Competency', type: 'Type', current: 'Current', expected: 'Expected' } },
+  // One entry per C-office competency table (TMO CTO, TMO CSO, ...). All share the same column names.
+  gaps: { tables: [], employeeField: 'Employee', max: 8,
+    fields: { competency: 'Competency (Skill Inventory)', type: 'Type of Competency', expected: 'Expected Level', current: 'Current Level', gap: 'Skill Gap' } },
 };
 
 export function larkConfig(env) {
@@ -43,9 +46,9 @@ async function api(env, cfg, method, path, body) {
   return d.data;
 }
 
-async function findRecord(env, cfg, tableId, field, value) {
+async function findRecord(env, cfg, tableId, field, value, op = 'is') {
   const d = await api(env, cfg, 'POST', `/open-apis/bitable/v1/apps/${cfg.appToken}/tables/${tableId}/records/search?page_size=100`,
-    { filter: { conjunction: 'and', conditions: [{ field_name: field, operator: 'is', value: [value] }] } });
+    { filter: { conjunction: 'and', conditions: [{ field_name: field, operator: op, value: [value] }] } });
   return d.items || [];
 }
 
@@ -56,8 +59,8 @@ export async function syncResult(env, staff, summary, surveyDate) {
   if (cfg.mode === 'mock') return { status: 'mock', note: 'Mock: nothing was sent to Lark.' };
   const f = cfg.results.fields, row = {};
   const put = (k, v) => { if (f[k]) row[f[k]] = v; };
-  const emp = await findRecord(env, cfg, cfg.employee.tableId, cfg.employee.staffIdField, staff.staff_id);
-  if (!emp.length) return { status: 'error', note: 'No Employee record found for staff ID ' + staff.staff_id };
+  const emp = await findRecord(env, cfg, cfg.employee.tableId, cfg.employee.matchField, staff.email);
+  if (!emp.length) return { status: 'error', note: 'No Employee record found for email ' + staff.email };
   put('employeeLink', [emp[0].record_id]);
   put('staffId', staff.staff_id);
   put('aspiration', summary.roleLabel);
@@ -73,15 +76,28 @@ export async function syncResult(env, staff, summary, surveyDate) {
   return { status: 'sent', note: '' };
 }
 
-// Skill gaps for one person, read live by staff ID.
-export async function readGaps(env, staffId) {
+// Skill gaps for one person: only rows marked "Gap", biggest first. Competencies are linked to Employee by name.
+const AREA_OF = { technical: 'Technical', managerial: 'Management', organizational: 'Organizational' };
+const num = (v) => { const n = parseFloat(flat(v)); return Number.isFinite(n) ? n : null; };
+export async function readGaps(env, staff) {
   const cfg = larkConfig(env);
   if (cfg.mode === 'off') return null;
   if (cfg.mode === 'mock') return { mock: true, gaps: [
-    { competency: 'Document lifecycle control', type: 'Technical', current: 2, expected: 3 },
-    { competency: 'Audit trail monitoring', type: 'Technical', current: 1, expected: 3 },
-    { competency: 'Stakeholder communication', type: 'Management', current: 2, expected: 3 }] };
-  const g = cfg.gaps.fields;
-  const items = await findRecord(env, cfg, cfg.gaps.tableId, cfg.gaps.staffIdField, staffId);
-  return { gaps: items.map((i) => ({ competency: flat(i.fields[g.competency]), type: flat(i.fields[g.type]), current: flat(i.fields[g.current]), expected: flat(i.fields[g.expected]) })) };
+    { competency: 'Workforce Capability Planning', type: 'Technical', areaKey: 'Technical', current: 2, expected: 3 },
+    { competency: 'Stakeholder Management', type: 'Managerial', areaKey: 'Management', current: 1, expected: 3 },
+    { competency: 'Business Acumen', type: 'Organizational', areaKey: 'Organizational', current: 2, expected: 3 }] };
+  const g = cfg.gaps.fields, out = [];
+  let name = staff.name;
+  const emp = await findRecord(env, cfg, cfg.employee.tableId, cfg.employee.matchField, staff.email);
+  if (emp.length) name = flat(emp[0].fields[cfg.employee.nameField]) || name;
+  for (const t of cfg.gaps.tables) {
+    const items = await findRecord(env, cfg, t.tableId, cfg.gaps.employeeField, name, 'contains');
+    for (const i of items) {
+      if (flat(i.fields[g.gap]) !== 'Gap') continue;
+      const type = flat(i.fields[g.type]);
+      out.push({ competency: String(flat(i.fields[g.competency])).trim(), type, areaKey: AREA_OF[type.toLowerCase()] || '', current: num(i.fields[g.current]), expected: num(i.fields[g.expected]) });
+    }
+  }
+  out.sort((a, b) => ((b.expected ?? 0) - (b.current ?? 0)) - ((a.expected ?? 0) - (a.current ?? 0)));
+  return { gaps: out.slice(0, cfg.gaps.max || 8), total: out.length };
 }

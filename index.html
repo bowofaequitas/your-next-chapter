@@ -291,9 +291,9 @@ const SUPPORT_HOW = {
  time:"Agree protected learning time with your manager, for example two hours a week."
 };
 const GAP_DEMO = {mock:true,gaps:[
- {competency:"Document lifecycle control",type:"Technical",expected:3,current:2},
- {competency:"Audit trail monitoring",type:"Technical",expected:3,current:1},
- {competency:"Stakeholder communication",type:"Management",expected:3,current:2}]};
+ {competency:"Document lifecycle control",type:"Technical",areaKey:"Technical",expected:3,current:2},
+ {competency:"Audit trail monitoring",type:"Technical",areaKey:"Technical",expected:3,current:1},
+ {competency:"Stakeholder communication",type:"Managerial",areaKey:"Management",expected:3,current:2}]};
 // ---- v17: staff-linked survey. Aspiration, motivation, learning style, development wishes. ----
 let flat = [], idx=0, tally={}, supportKey=null, areaPicks=[], wishText='', stage=document.getElementById('stage');
 let history=[], usedBack=new Set(), busy=false, picks=[], lastPct=0;
@@ -478,7 +478,7 @@ function gapHtml(){
   const S=lastSummary;
   if(gaps===undefined) return `<p class="note">Loading your skill gaps…</p>`;
   if(!gaps||!gaps.gaps||!gaps.gaps.length) return `<p class="note">Your skill gaps are not available here yet. L&amp;D will place them beside your answers.</p>`;
-  const rows=gaps.gaps.map(g=>{ const hit=S.areas.some(a=>AREAS[a].lbl.toLowerCase()===String(g.type||'').toLowerCase());
+  const rows=gaps.gaps.map(g=>{ const hit=S.areas.some(a=>a===g.areaKey);
     return `<tr><td>${esc(g.competency)}${hit?' <span class="tag">Also your wish</span>':''}</td><td>${esc(g.type||'')}</td><td>${esc(g.current??'')}</td><td>${esc(g.expected??'')}</td></tr>`; }).join('');
   return `${gaps.mock?'<p class="note">Sample data, shown until the Learning Passport is connected.</p>':''}
     <table class="gaps"><thead><tr><th>Skill</th><th>Area</th><th>Now</th><th>Needed</th></tr></thead><tbody>${rows}</tbody></table>`;
