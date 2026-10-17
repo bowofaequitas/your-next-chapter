@@ -176,9 +176,9 @@ const Q = [
  ["Owning a process or system the business can't run without.",["RoleCritical"]],
  ["Catching problems before they reach the business.",["RoleCritical"]],
  ["Taking responsibility for a team's results.",["RoleSuccessor"],'std'],
- ["Shaping where a whole department or business goes.",["RoleDirector"],'dir'],
+ ["Setting direction across several departments, beyond my own.",["RoleDirector"],'dir'],
  ["Teaching what you know so others can do it too.",["RoleSpecialist"],'std'],
- ["Representing the organisation to senior stakeholders.",["RoleDirector"],'dir']]},
+ ["Speaking for the organisation to senior leaders and outside partners.",["RoleDirector"],'dir']]},
 {k:'sit',icon:'book',t:"Your team is switching to a tool you've never used. You have two weeks to get good at it.",ask:"How do you like to learn it?",o:[
  ["Show me once, then let me try.",["LearnSocial","LearnExperiential"]],
  ["Give me a step-by-step guide.",["LearnStructured"]],
@@ -188,7 +188,7 @@ const Q = [
  ["Lead the team and be accountable for how it performs.",["RoleSuccessor"]],
  ["The expert seat: the one who knows the work best.",["RoleSpecialist"]],
  ["The key role: the process or system we can't run without.",["RoleCritical"]],
- ["A seat at the leadership table, shaping the department's direction.",["RoleDirector"],'dir']]},
+ ["A seat at the leadership table, deciding where the business invests and heads.",["RoleDirector"],'dir']]},
 {k:'duo',icon:'book',t:"Same tool, one more question.",ask:"Which is more you?",o:[
  ["A clear guide, one step at a time.",["LearnStructured"]],
  ["A pointer to the material. I'll figure it out.",["LearnSelfDirected"]]]},
@@ -201,7 +201,7 @@ const Q = [
  ["Lead a small team on a new initiative.",["RoleSuccessor"]],
  ["Become the in-house expert on a tool or process.",["RoleSpecialist"]],
  ["Take over a critical process that keeps breaking.",["RoleCritical"]],
- ["Draft next year's direction for the department.",["RoleDirector"],'dir']]},
+ ["Lead a cross-department initiative that shapes where the business goes.",["RoleDirector"],'dir']]},
 {k:'sit',icon:'shield',t:"You're stuck on something new, and the deadline is close.",ask:"What do you do?",o:[
  ["Ask a colleague who has done it before.",["LearnSocial"]],
  ["Look for the step-by-step guide or procedure.",["LearnStructured"]],
@@ -211,7 +211,7 @@ const Q = [
  ["The leader people want to work for.",["RoleSuccessor"]],
  ["The person who really knows their craft.",["RoleSpecialist"]],
  ["The person the business relies on to keep things running.",["RoleCritical"]],
- ["The leader who set the direction.",["RoleDirector"],'dir']]},
+ ["The leader who shaped where the whole business went.",["RoleDirector"],'dir']]},
 {k:'duo',icon:'chat',t:"One more about learning.",ask:"Which sounds more like you?",o:[
  ["Try it on a real task, and learn from what goes wrong.",["LearnExperiential"]],
  ["Watch and talk with someone experienced first.",["LearnSocial"]]]},
@@ -249,7 +249,7 @@ const ROLES = {
   d:"You lean toward key roles the business cannot run without: owning a process or system and keeping it dependable.",
   route:"Which roles count as critical is decided by the organisation. Your interest is shared with L&D and HC so you can be prepared when one opens."},
  RoleDirector:{lbl:"Directorship",name:"The Director",sprite:"CarCrossFunctional",tag:"Sets the direction. Thinks about the whole enterprise.",
-  d:"You lean toward shaping the direction of a whole department or business.",
+  d:"You lean toward enterprise-level leadership: setting direction across departments and shaping where the whole business heads, beyond the scope of a single team.",
   route:"This is the enterprise leadership track, supported through the leadership development programme."}
 };
 const LEARN = {LearnStructured:"You learn best with a clear, step-by-step guide.",
