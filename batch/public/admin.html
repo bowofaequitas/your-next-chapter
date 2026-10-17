@@ -90,10 +90,10 @@ function chart(title,entries,field){const c=el('div',null,'card');c.style.margin
  if(!entries.length)c.append(el('div','No data yet.','note'));
  entries.forEach(([k,n])=>{const b=el('div',null,'bar');b.append(el('span',k,'l'));const t=el('span',null,'t'),f=el('span',null,'f');f.style.width=(n/mx*100)+'%';t.append(f);
   const nb=el('button',String(n),'num');nb.onclick=()=>{FILTER={field,k};drawWho();$('filterBar').scrollIntoView({behavior:'smooth'})};b.append(t,nb);c.append(b)});return c}
-const F={asp:r=>r.summary.roleLabel,learn:r=>r.summary.learnLabel,why:r=>r.summary.whyLabels||[],area:r=>r.summary.areaLabels||[],sup:r=>r.summary.supportLabel};
+const F={asp:r=>r.summary.roleLabel,learn:r=>r.summary.learnLabel,why:r=>r.summary.whyLabels||[],area:r=>r.summary.areaLabels||[],sup:r=>r.summary.supportFirstLabel||r.summary.supportLabel};
 function drawCharts(){const g=$('charts');g.innerHTML='';
  g.append(chart('Aspiration',cnt(RESP,F.asp),'asp'),chart('Learning style',cnt(RESP,F.learn),'learn'),chart('Motivation (top two each)',cnt(RESP,F.why),'why'),
-  chart('Development wishes',cnt(RESP,F.area),'area'),chart('Support wanted',cnt(RESP,F.sup),'sup'))}
+  chart('Development wishes',cnt(RESP,F.area),'area'),chart('Support wanted (first choice)',cnt(RESP,F.sup),'sup'))}
 function drawWho(){const bar=$('filterBar');bar.innerHTML='';let rows=RESP;
  if(FILTER){rows=RESP.filter(r=>[].concat(F[FILTER.field](r)).includes(FILTER.k));const b=el('button','Show everyone','sec');b.onclick=()=>{FILTER=null;drawWho()};bar.append(el('span','Showing '+rows.length+': '+FILTER.k),b)}
  else bar.append(el('span',RESP.length+' respondents','note'));

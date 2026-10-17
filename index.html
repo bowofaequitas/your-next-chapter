@@ -189,9 +189,9 @@ const Q = [
  ["The expert seat: the one who knows the work best.",["RoleSpecialist"]],
  ["The key role: the process or system we can't run without.",["RoleCritical"]],
  ["A seat at the leadership table, deciding where the business invests and heads.",["RoleDirector"],'dir']]},
-{k:'duo',icon:'book',t:"Same tool, one more question.",ask:"Which is more you?",o:[
- ["A clear guide, one step at a time.",["LearnStructured"]],
- ["A pointer to the material. I'll figure it out.",["LearnSelfDirected"]]]},
+{k:'duo',icon:'book',t:"Your manager says you'll need a new skill by the end of the year.",ask:"Which way would you rather get there?",o:[
+ ["A set programme with dates and a finish line.",["LearnStructured"]],
+ ["Good material I can dip into when I have time.",["LearnSelfDirected"]]]},
 {k:'sit',icon:'heart',t:"Picture the end of a good year at work.",ask:"What would make you say “that was worth it”?",o:[
  ["I made a real difference to people or to our mission.",["Purpose"]],
  ["My role felt secure and my future here was clearer.",["Security"]],
@@ -202,19 +202,19 @@ const Q = [
  ["Become the in-house expert on a tool or process.",["RoleSpecialist"]],
  ["Take over a critical process that keeps breaking.",["RoleCritical"]],
  ["Lead a cross-department initiative that shapes where the business goes.",["RoleDirector"],'dir']]},
-{k:'sit',icon:'shield',t:"You're stuck on something new, and the deadline is close.",ask:"What do you do?",o:[
- ["Ask a colleague who has done it before.",["LearnSocial"]],
- ["Look for the step-by-step guide or procedure.",["LearnStructured"]],
- ["Keep trying things until it works.",["LearnExperiential"]],
- ["Search for resources and work it out alone.",["LearnSelfDirected"]]]},
+{k:'sit',icon:'shield',t:"Think of the best training or learning session you have been part of.",ask:"What made it work for you?",o:[
+ ["The trainer walked us through it step by step.",["LearnStructured"]],
+ ["We practised on real cases and learned from mistakes.",["LearnExperiential"]],
+ ["I learned from the people in the room.",["LearnSocial"]],
+ ["I took the material away and dug into it later.",["LearnSelfDirected"]]]},
 {k:'sit',icon:'star',t:"Think about how you'd like to be known in five years.",ask:"I'd like to be known as…",o:[
  ["The leader people want to work for.",["RoleSuccessor"]],
  ["The person who really knows their craft.",["RoleSpecialist"]],
  ["The person the business relies on to keep things running.",["RoleCritical"]],
  ["The leader who shaped where the whole business went.",["RoleDirector"],'dir']]},
-{k:'duo',icon:'chat',t:"One more about learning.",ask:"Which sounds more like you?",o:[
- ["Try it on a real task, and learn from what goes wrong.",["LearnExperiential"]],
- ["Watch and talk with someone experienced first.",["LearnSocial"]]]},
+{k:'duo',icon:'chat',t:"Two ways to grow into a new responsibility.",ask:"Which would you pick?",o:[
+ ["Do the real task, then get feedback on what to improve.",["LearnExperiential"]],
+ ["Spend time alongside someone who already does it well.",["LearnSocial"]]]},
 {k:'top3',icon:'bulb',t:"Last card! Think about what makes work worth it for you.",ask:"Pick the three that matter most.",o:[
  ["Knowing my work makes a real difference.",["Purpose"]],
  ["Feeling stable and secure in my role.",["Security"]],
@@ -257,23 +257,37 @@ const LEARN = {LearnStructured:"You learn best with a clear, step-by-step guide.
  LearnSocial:"You learn best through people: coaching, mentoring and conversation.",
  LearnSelfDirected:"You learn best exploring on your own, at your own pace."};
 const LEARN_SHORT = {LearnStructured:"Structured",LearnExperiential:"Experiential",LearnSocial:"Social",LearnSelfDirected:"Self-directed"};
-const LEARN_TIPS = {
- LearnStructured:["Pick one programme or certification and book the dates upfront.","Break it into milestones and tick them off.","Ask your manager to review each finished milestone."],
- LearnExperiential:["Choose a real task to practise on in the first week.","After each try, write two lines: what worked and what to change.","Ask someone for a short debrief after each attempt."],
- LearnSocial:["Find someone already doing the role and set a monthly catch-up.","Shadow them on one real task.","Teach what you learned to a colleague to lock it in."],
- LearnSelfDirected:["Choose two or three good resources only, so you don't drown.","Set your own weekly slot, even 30 minutes.","Check in with your manager once a month on progress."]
+const LEARN_DO = {
+ LearnStructured:[["Pick one programme.","Choose a course or certification and book the dates upfront."],["Work in milestones.","Break it into small steps and tick each one off."],["Get it checked.","Ask your manager to review each finished milestone."]],
+ LearnExperiential:[["Start with a real task.","Choose one in the first week instead of reading first."],["Reflect after each try.","Write two lines: what worked and what to change."],["Ask for a debrief.","A short chat with someone after each attempt."]],
+ LearnSocial:[["Find a guide.","Someone already doing the role, with a monthly catch-up."],["Shadow a real task.","Watch it done, then do it with them beside you."],["Teach it back.","Explain what you learned to a colleague to lock it in."]],
+ LearnSelfDirected:[["Choose two or three resources.","A short list, so you don't drown in options."],["Set your own slot.","Even 30 minutes a week, in your calendar."],["Check in monthly.","A quick update to your manager keeps you on track."]]
+};
+const LEARN_ASK = {
+ LearnStructured:["A clear learning path with dates","A named programme or certification","Regular review points"],
+ LearnExperiential:["A real task or stretch assignment","Room to try and make small mistakes","Quick feedback after each attempt"],
+ LearnSocial:["A mentor or buddy","Time to shadow someone","A peer group to learn with"],
+ LearnSelfDirected:["A short list of good resources","Protected time you control","Light check-ins, not close supervision"]
+};
+const LEARN_WATCH = {
+ LearnStructured:"Waiting for the perfect programme. Start with the next small step available.",
+ LearnExperiential:"Learning only by trial. Add a little reading so you don't repeat avoidable mistakes.",
+ LearnSocial:"Waiting for the right person to teach you. Start on something small meanwhile.",
+ LearnSelfDirected:"Going it alone for too long. Share progress now and then so others can help."
 };
 // 8 capability areas (Aafiyat workforce development framework)
 const AREAS = {
- Technical:{lbl:"Technical",d:"Skills specific to my job and function"},
- Management:{lbl:"Management",d:"Planning work, managing resources, running projects"},
- Leadership:{lbl:"Leadership",d:"Leading people, influencing, thinking strategically"},
- Resilience:{lbl:"Emotional resilience",d:"Staying composed, adapting, handling pressure and people"},
- Role:{lbl:"Role",d:"Doing my current or assigned role better"},
- Culture:{lbl:"Culture",d:"Living and championing our values and culture"},
- Spiritual:{lbl:"Spiritual",d:"Stewardship, intention and integrity in how I work"},
- Organizational:{lbl:"Organizational",d:"Understanding the business: finance, sales, product, AI and data"}
+ Technical:{lbl:"Technical",d:"Skills for your own function: systems, tools, processes, know-how"},
+ Management:{lbl:"Management",d:"Running work well: planning, resources, projects and deadlines"},
+ Leadership:{lbl:"Leadership",d:"Leading and influencing people, building a team, thinking strategically"},
+ Resilience:{lbl:"Emotional resilience",d:"Staying steady under pressure, adapting to change, handling difficult conversations"},
+ Role:{lbl:"Role",d:"Doing your current job to the standard expected: its duties, tools and responsibilities"},
+ Culture:{lbl:"Culture",d:"Living our values and ways of working: how we collaborate and treat each other"},
+ Spiritual:{lbl:"Spiritual",d:"Stewardship and integrity: handling trust and responsibility properly, doing the right thing when no one is watching"},
+ Organizational:{lbl:"Organizational",d:"Knowing how the business works: finance, sales, products, data and AI"}
 };
+// Which Learning Passport gap types feed each area. Areas not listed here have no gap data yet.
+const AREA_GAPTYPE = {Technical:'Technical',Management:'Managerial',Organizational:'Organizational'};
 const AREA_HOW = {
  Technical:{LearnStructured:"A certification or structured course in your function, with milestones in your IDP.",LearnExperiential:"Harder real tasks in your function, each followed by a short review.",LearnSocial:"Pair with a senior colleague in your function and shadow them on real cases.",LearnSelfDirected:"Two or three strong resources for your skill gap, and a weekly slot to work through them."},
  Management:{LearnStructured:"A short management course on planning, resources and project basics.",LearnExperiential:"Run a small project end to end, then debrief.",LearnSocial:"Ask a manager to mentor you through one real planning cycle.",LearnSelfDirected:"Practise with templates on your own work, with a monthly check-in with your manager."},
@@ -296,7 +310,7 @@ const GAP_DEMO = {mock:true,gaps:[
  {competency:"Stakeholder communication",type:"Managerial",areaKey:"Management",expected:3,current:2}]};
 // ---- v17: staff-linked survey. Aspiration, motivation, learning style, development wishes. ----
 let flat = [], idx=0, tally={}, supportKey=null, areaPicks=[], wishText='', stage=document.getElementById('stage');
-let history=[], usedBack=new Set(), busy=false, picks=[], lastPct=0;
+let history=[], usedBack=new Set(), busy=false, picks=[], lastPct=0, supportRank=[];
 const TOKEN = (new URLSearchParams(location.search).get('t')||'').slice(0,80);
 let mode='demo', person={}, isDir=false, submissionId='', lastSummary=null, saveState='', gaps=undefined, notice='';
 const LETTER_COL = ['var(--tomato)','var(--sun)','var(--grass)','var(--grape)'];
@@ -423,13 +437,21 @@ function toggleArea(k){
 }
 function confirmAreas(){ if(!areaPicks.length) return; wishText=(document.getElementById('wish').value||'').trim().slice(0,160); renderSupport(); }
 function renderSupport(){
-  const letters=['A','B','C','D'];
+  supportRank=[];
   stage.innerHTML=`<div class="card slide"><div class="qhead"><div class="qicon">${iconSVG('gear',5)}</div><div class="kind">Last one</div></div>
    <h2 class="ask">What would help you most to get there?</h2>
-   ${Object.keys(SUPPORT).map((k,i)=>`<button class="opt" onclick="chooseSupport('${k}')"><b style="background:${LETTER_COL[i]}">${letters[i]}</b><span>${SUPPORT[k]}</span></button>`).join('')}</div>`;
+   <p class="note">Tap in order: 1 is what you'd most want, 4 is what you'd want least.</p>
+   ${Object.keys(SUPPORT).map(k=>`<button class="opt pk rk" data-k="${k}" onclick="toggleRank('${k}')"><b class="tick"></b><span>${SUPPORT[k]}</span></button>`).join('')}
+   <button class="btn" id="rkGo" disabled onclick="confirmRank()">See my results</button></div>`;
 }
-function chooseSupport(k){
-  supportKey=k; computeProfile();
+function toggleRank(k){
+  if(supportRank.includes(k)) supportRank=supportRank.filter(x=>x!==k); else supportRank.push(k);
+  document.querySelectorAll('.opt.rk').forEach(el=>{ const i=supportRank.indexOf(el.dataset.k); el.classList.toggle('sel',i>=0); el.querySelector('.tick').textContent=i>=0?String(i+1):''; });
+  document.getElementById('rkGo').disabled=supportRank.length!==4;
+}
+function confirmRank(){
+  if(supportRank.length!==4) return;
+  supportKey=supportRank[0]; computeProfile();
   if(mode==='linked') submitResponse(); else { gaps={...GAP_DEMO}; renderResults(); }
 }
 async function submitResponse(){
@@ -450,7 +472,7 @@ async function submitResponse(){
 async function loadGaps(){
   gaps=undefined;
   try{ const r=await fetch('/api/skill-gaps?t='+encodeURIComponent(TOKEN)); const d=await r.json(); gaps = r.ok && d.gaps ? d : null; }catch(e){ gaps=null; }
-  const el=document.getElementById('gapBody'); if(el) el.innerHTML=gapHtml();
+  const el=document.getElementById('gapBody'); if(el) el.innerHTML=gapHtml(); const e2=document.getElementById('ideasBody'); if(e2) e2.innerHTML=ideasHtml();
 }
 // ---- profile ----
 function computeProfile(){
@@ -466,7 +488,7 @@ function computeProfile(){
     learnKey, learnLabel:LEARN_SHORT[learnKey], learnSecondKey:learnSecond, learnSecondLabel:learnSecond?LEARN_SHORT[learnSecond]:'',
     whyKeys, whyLabels:whyKeys.map(k=>LABEL[k]),
     areas:areaPicks.slice(), areaLabels:areaPicks.map(k=>AREAS[k].lbl), wish:wishText,
-    supportKey, supportLabel:SUPPORT[supportKey]
+    supportKey, supportFirstLabel:SUPPORT[supportKey], supportRank:supportRank.slice(), supportLabel:supportRank.map(k=>SUPPORT[k]).join(' > ')
   };
   return lastSummary;
 }
@@ -482,6 +504,12 @@ function gapHtml(){
     return `<tr><td>${esc(g.competency)}${hit?' <span class="tag">Also your wish</span>':''}</td><td>${esc(g.type||'')}</td><td>${esc(g.current??'')}</td><td>${esc(g.expected??'')}</td></tr>`; }).join('');
   return `${gaps.mock?'<p class="note">Sample data, shown until the Learning Passport is connected.</p>':''}
     <table class="gaps"><thead><tr><th>Skill</th><th>Area</th><th>Now</th><th>Needed</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function ideasHtml(){
+  const S=lastSummary, have=gaps&&gaps.gaps?gaps.gaps:null;
+  return S.areas.map(a=>{ const n=have?have.filter(g=>g.areaKey===a).length:0;
+    const why = have===null||have===undefined ? '' : n ? `<span class="tag">Matches ${n} skill gap${n>1?'s':''}</span>` : AREA_GAPTYPE[a] ? `<span class="tag">Your own wish</span>` : `<span class="tag">Your own wish. No gap data for this area yet</span>`;
+    return `<p><b>${AREAS[a].lbl}</b> ${why}<br>${AREA_HOW[a][S.learnKey]}</p>`; }).join('');
 }
 function renderResults(){
   const S=lastSummary||computeProfile(), R=ROLES[S.roleKey], A=ARCH[R.sprite];
@@ -503,9 +531,15 @@ function renderResults(){
      <p style="margin-top:10px"><b>Areas you want to grow:</b> ${S.areaLabels.map(esc).join(', ')}.</p>
      ${S.wish?`<p><b>In your words:</b> ${esc(S.wish)}</p>`:''}`,'dev')}
    ${panel('book','How you learn',`<p>${LEARN[S.learnKey]}${S.learnSecondKey?' '+LEARN[S.learnSecondKey].replace('You learn best','You also learn well'):''}</p>
-     <ul class="quests">${LEARN_TIPS[S.learnKey].map(t=>`<li>${t}</li>`).join('')}</ul>`,'dev')}
-   ${panel('rocket','Learning ideas for what you picked',S.areas.map(a=>`<p><b>${AREAS[a].lbl}.</b> ${AREA_HOW[a][S.learnKey]}</p>`).join(''),'dev')}
-   ${panel('heart','What would help you most',`<p><b>${SUPPORT[S.supportKey]}.</b></p><p>${SUPPORT_HOW[S.supportKey]}</p>`,'dev')}
+     <h4 class="sub">Do more of this</h4>
+     <ul class="quests">${LEARN_DO[S.learnKey].map(t=>`<li><b>${t[0]}</b> ${t[1]}</li>`).join('')}</ul>
+     <h4 class="sub">Ask for this</h4>
+     <ul class="quests wants">${LEARN_ASK[S.learnKey].map(t=>`<li>${t}</li>`).join('')}</ul>
+     <h4 class="sub">Watch out for</h4>
+     <p class="callout">${LEARN_WATCH[S.learnKey]}</p>`,'dev')}
+   ${panel('rocket','Learning ideas for what you picked',`<div id="ideasBody">${ideasHtml()}</div>`,'dev')}
+   ${panel('heart','What would help you most',`<ol class="rank">${S.supportRank.map(k=>`<li>${SUPPORT[k]}</li>`).join('')}</ol>
+     <p><b>First choice.</b> ${SUPPORT_HOW[S.supportKey]}</p>${S.supportRank[1]?`<p><b>Second choice.</b> ${SUPPORT_HOW[S.supportRank[1]]}</p>`:''}`,'dev')}
    ${panel('mega','Meet the other characters',`<p class="note">Different ways of contributing. None is better than the others.</p>
      <div class="cast">${cast.map(k=>{ const r=ROLES[k]; return `<div class="cast-c${k===S.roleKey?' me':''}" style="--c:${ARCH[r.sprite].bg}">
        ${k===S.roleKey?'<span class="you">That’s you</span>':''}<div class="cast-s">${spriteSVG(makeGrid(r.sprite),r.sprite,4)}</div><div class="cast-n">${r.name}</div><p>${r.tag}</p></div>`; }).join('')}</div>`)}
@@ -534,8 +568,8 @@ function saveCard(){
   x.font=`14px ${FF}`; x.fillText('YOUR NEXT CHAPTER',W/2,H-70);
   const a=document.createElement('a'); a.download='my-next-chapter-card.png'; a.href=c.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
 }
-function restart(){ submissionId=''; saveState=''; lastSummary=null; idx=0; tally={}; supportKey=null; areaPicks=[]; wishText=''; history=[]; usedBack=new Set(); lastPct=0; buildFlat(); renderIntro(); }
-const st=document.createElement('style'); st.textContent=`.gaps{width:100%;border-collapse:collapse;font-size:15px;background:#fff}.gaps th,.gaps td{border:2px solid var(--ink);padding:5px 8px;text-align:left}.gaps th{background:var(--ink);color:#fff;font-weight:700}.tag{background:var(--sun);border:2px solid var(--ink);font-size:12px;padding:1px 5px;white-space:nowrap}textarea.field{resize:vertical;margin-bottom:8px}.opt small{font-weight:400;color:var(--sub)}`;
+function restart(){ submissionId=''; saveState=''; lastSummary=null; idx=0; tally={}; supportKey=null; supportRank=[]; areaPicks=[]; wishText=''; history=[]; usedBack=new Set(); lastPct=0; buildFlat(); renderIntro(); }
+const st=document.createElement('style'); st.textContent=`.gaps{width:100%;border-collapse:collapse;font-size:15px;background:#fff}.gaps th,.gaps td{border:2px solid var(--ink);padding:5px 8px;text-align:left}.gaps th{background:var(--ink);color:#fff;font-weight:700}.tag{background:var(--sun);border:2px solid var(--ink);font-size:12px;padding:1px 5px;white-space:nowrap}textarea.field{resize:vertical;margin-bottom:8px}.sub{font-family:var(--px);font-size:10px;margin:12px 0 6px;color:var(--grape)}.rank{margin:4px 0 10px 22px}.rank li{margin-bottom:3px}.opt.rk.sel .tick::after{content:""}.opt.rk .tick{display:grid;place-items:center;font-family:var(--px);font-size:11px}.opt small{font-weight:400;color:var(--sub)}`;
 document.head.appendChild(st);
 buildScenery(); initMode();
 </script></body></html>
