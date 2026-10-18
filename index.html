@@ -507,9 +507,9 @@ function gapHtml(){
 }
 function ideasHtml(){
   const S=lastSummary, have=gaps&&gaps.gaps?gaps.gaps:null;
-  return S.areas.map(a=>{ const n=have?have.filter(g=>g.areaKey===a).length:0;
-    const why = have===null||have===undefined ? '' : n ? `<span class="tag">Matches ${n} skill gap${n>1?'s':''}</span>` : AREA_GAPTYPE[a] ? `<span class="tag">Your own wish</span>` : `<span class="tag">Your own wish. No gap data for this area yet</span>`;
-    return `<p><b>${AREAS[a].lbl}</b> ${why}<br>${AREA_HOW[a][S.learnKey]}</p>`; }).join('');
+  return `<ul class="focus">`+S.areas.map(a=>{ const n=have?have.filter(g=>g.areaKey===a).length:0;
+    const chip = n ? `<span class="chip2 gap">${n} skill gap${n>1?'s':''}</span>` : `<span class="chip2">Your wish</span>`;
+    return `<li><div class="fh"><b>${AREAS[a].lbl}</b>${chip}</div><p>${AREA_HOW[a][S.learnKey]}</p></li>`; }).join('')+`</ul>`;
 }
 function renderResults(){
   const S=lastSummary||computeProfile(), R=ROLES[S.roleKey], A=ARCH[R.sprite];
@@ -528,8 +528,7 @@ function renderResults(){
    ${panel('heart','What drives you',S.whyKeys.map(k=>`<p><b>${LABEL[k]}.</b> ${DRIVER_PHRASE[k].charAt(0).toUpperCase()+DRIVER_PHRASE[k].slice(1)}.</p>`).join(''))}
    ${panel('shield','Your wants beside your skill gaps',`
      <div id="gapBody">${gapHtml()}</div>
-     <p style="margin-top:10px"><b>Areas you want to grow:</b> ${S.areaLabels.map(esc).join(', ')}.</p>
-     ${S.wish?`<p><b>In your words:</b> ${esc(S.wish)}</p>`:''}`,'dev')}
+     ${S.wish?`<p style="margin-top:10px"><b>In your words:</b> ${esc(S.wish)}</p>`:''}`,'dev')}
    ${panel('book','How you learn',`<p>${LEARN[S.learnKey]}${S.learnSecondKey?' '+LEARN[S.learnSecondKey].replace('You learn best','You also learn well'):''}</p>
      <h4 class="sub">Do more of this</h4>
      <ul class="quests">${LEARN_DO[S.learnKey].map(t=>`<li><b>${t[0]}</b> ${t[1]}</li>`).join('')}</ul>
@@ -537,7 +536,7 @@ function renderResults(){
      <ul class="quests wants">${LEARN_ASK[S.learnKey].map(t=>`<li>${t}</li>`).join('')}</ul>
      <h4 class="sub">Watch out for</h4>
      <p class="callout">${LEARN_WATCH[S.learnKey]}</p>`,'dev')}
-   ${panel('rocket','Learning ideas for what you picked',`<div id="ideasBody">${ideasHtml()}</div>`,'dev')}
+   ${panel('rocket','Where to start',`<div id="ideasBody">${ideasHtml()}</div>`,'dev')}
    ${panel('heart','What would help you most',`<ol class="rank">${S.supportRank.map(k=>`<li>${SUPPORT[k]}</li>`).join('')}</ol>
      <p><b>First choice.</b> ${SUPPORT_HOW[S.supportKey]}</p>${S.supportRank[1]?`<p><b>Second choice.</b> ${SUPPORT_HOW[S.supportRank[1]]}</p>`:''}`,'dev')}
    ${panel('mega','Meet the other characters',`<p class="note">Different ways of contributing. None is better than the others.</p>
@@ -569,7 +568,7 @@ function saveCard(){
   const a=document.createElement('a'); a.download='my-next-chapter-card.png'; a.href=c.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
 }
 function restart(){ submissionId=''; saveState=''; lastSummary=null; idx=0; tally={}; supportKey=null; supportRank=[]; areaPicks=[]; wishText=''; history=[]; usedBack=new Set(); lastPct=0; buildFlat(); renderIntro(); }
-const st=document.createElement('style'); st.textContent=`.gaps{width:100%;border-collapse:collapse;font-size:15px;background:#fff}.gaps th,.gaps td{border:2px solid var(--ink);padding:5px 8px;text-align:left}.gaps th{background:var(--ink);color:#fff;font-weight:700}.tag{background:var(--sun);border:2px solid var(--ink);font-size:12px;padding:1px 5px;white-space:nowrap}textarea.field{resize:vertical;margin-bottom:8px}.sub{font-family:var(--px);font-size:10px;margin:12px 0 6px;color:var(--grape)}.rank{margin:4px 0 10px 22px}.rank li{margin-bottom:3px}.opt.rk.sel .tick::after{content:""}.opt.rk .tick{display:grid;place-items:center;font-family:var(--px);font-size:11px}.opt small{font-weight:400;color:var(--sub)}`;
+const st=document.createElement('style'); st.textContent=`.gaps{width:100%;border-collapse:collapse;font-size:15px;background:#fff}.gaps th,.gaps td{border:2px solid var(--ink);padding:5px 8px;text-align:left}.gaps th{background:var(--ink);color:#fff;font-weight:700}.tag{background:var(--sun);border:2px solid var(--ink);font-size:12px;padding:1px 5px;white-space:nowrap}textarea.field{resize:vertical;margin-bottom:8px}.focus{list-style:none;margin:0}.focus li{background:#fff;border:3px solid var(--ink);padding:8px 10px;margin-bottom:8px}.focus .fh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:2px}.chip2{font-size:12px;font-weight:700;border:2px solid var(--ink);padding:0 6px;background:#e3d9ff;white-space:nowrap}.chip2.gap{background:var(--sun)}.focus p{margin:0!important;font-size:15px}.sub{font-family:var(--px);font-size:10px;margin:12px 0 6px;color:var(--grape)}.rank{margin:4px 0 10px 22px}.rank li{margin-bottom:3px}.opt.rk.sel .tick::after{content:""}.opt.rk .tick{display:grid;place-items:center;font-family:var(--px);font-size:11px}.opt small{font-weight:400;color:var(--sub)}`;
 document.head.appendChild(st);
 buildScenery(); initMode();
 </script></body></html>
