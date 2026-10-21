@@ -173,7 +173,7 @@ const Q = [
  ["Growing the people around you, step by step.",["RoleSuccessor"]],
  ["Going deep until you're the one people ask.",["RoleSpecialist"]],
  ["Getting the hard technical details exactly right.",["RoleSpecialist"]],
- ["Owning a process or system the business can't run without.",["RoleCritical"]],
+ ["Being the person responsible for a process or system the business depends on.",["RoleCritical"]],
  ["Catching problems before they reach the business.",["RoleCritical"]],
  ["Taking responsibility for a team's results.",["RoleSuccessor"],'std'],
  ["Setting direction across several departments, beyond my own.",["RoleDirector"],'dir'],
@@ -187,7 +187,7 @@ const Q = [
 {k:'sit',icon:'compass',t:"A new role opens up in your department, and you can put your name forward.",ask:"Which one pulls you most?",o:[
  ["Lead the team and be accountable for how it performs.",["RoleSuccessor"]],
  ["The expert seat: the one who knows the work best.",["RoleSpecialist"]],
- ["The key role: the process or system we can't run without.",["RoleCritical"]],
+ ["The key role: responsible for a process or system the business depends on.",["RoleCritical"]],
  ["A seat at the leadership table, deciding where the business invests and heads.",["RoleDirector"],'dir']]},
 {k:'duo',icon:'book',t:"Your manager says you'll need a new skill by the end of the year.",ask:"Which way would you rather get there?",o:[
  ["A set programme with dates and a finish line.",["LearnStructured"]],
@@ -200,7 +200,7 @@ const Q = [
 {k:'sit',icon:'flag',t:"Your manager offers you one stretch assignment this quarter.",ask:"Which would you take?",o:[
  ["Lead a small team on a new initiative.",["RoleSuccessor"]],
  ["Become the in-house expert on a tool or process.",["RoleSpecialist"]],
- ["Take over a critical process that keeps breaking.",["RoleCritical"]],
+ ["Take charge of a critical process and keep it running reliably.",["RoleCritical"]],
  ["Lead a cross-department initiative that shapes where the business goes.",["RoleDirector"],'dir']]},
 {k:'sit',icon:'shield',t:"Think of the best training or learning session you have been part of.",ask:"What made it work for you?",o:[
  ["The trainer walked us through it step by step.",["LearnStructured"]],
@@ -210,7 +210,7 @@ const Q = [
 {k:'sit',icon:'star',t:"Think about how you'd like to be known in five years.",ask:"I'd like to be known as…",o:[
  ["The leader people want to work for.",["RoleSuccessor"]],
  ["The person who really knows their craft.",["RoleSpecialist"]],
- ["The person the business relies on to keep things running.",["RoleCritical"]],
+ ["The person the business depends on to keep a key process running.",["RoleCritical"]],
  ["The leader who shaped where the whole business went.",["RoleDirector"],'dir']]},
 {k:'duo',icon:'chat',t:"Two ways to grow into a new responsibility.",ask:"Which would you pick?",o:[
  ["Do the real task, then get feedback on what to improve.",["LearnExperiential"]],
@@ -246,7 +246,7 @@ const ROLES = {
   d:"You lean toward deep expertise: being the person others trust for the craft, and passing it on.",
   route:"There is no separate specialist title today. It grows by deepening in your function, taking harder assignments and becoming the recognised go-to."},
  RoleCritical:{lbl:"Critical Position",name:"The Keystone",sprite:"CarBuilder",tag:"Holds things together. The business leans on you.",
-  d:"You lean toward key roles the business cannot run without: owning a process or system and keeping it dependable.",
+  d:"You lean toward key roles the business depends on: being the person responsible for a critical process or system and keeping it dependable.",
   route:"Which roles count as critical is decided by the organisation. Your interest is shared with L&D and HC so you can be prepared when one opens."},
  RoleDirector:{lbl:"Directorship",name:"The Director",sprite:"CarCrossFunctional",tag:"Sets the direction. Thinks about the whole enterprise.",
   d:"You lean toward enterprise-level leadership: setting direction across departments and shaping where the whole business heads, beyond the scope of a single team.",
@@ -295,7 +295,7 @@ const AREA_HOW = {
  Resilience:{LearnStructured:"A structured workshop on composure, communication and handling pressure.",LearnExperiential:"Reflect after real pressure moments and try one new response each time.",LearnSocial:"A trusted buddy or coach to talk hard situations through.",LearnSelfDirected:"Self-paced reflection, with an occasional check-in."},
  Role:{LearnStructured:"A role guide with clear expectations and a checklist.",LearnExperiential:"Take on the role's real tasks with a short review after each.",LearnSocial:"Shadow someone who does the role well.",LearnSelfDirected:"Explore the role's tools and documents yourself, then confirm with your manager."},
  Culture:{LearnStructured:"The culture and values programme, then a simple commitment plan.",LearnExperiential:"Lead a culture activity in your team.",LearnSocial:"Talk with culture champions about how they apply the values at work.",LearnSelfDirected:"Reflect on the values and note each week where you lived them."},
- Spiritual:{LearnStructured:"A structured session on stewardship, intention and integrity.",LearnExperiential:"Apply them in a real decision and reflect on it afterwards.",LearnSocial:"Reflective conversations with a mentor.",LearnSelfDirected:"A personal reflection practice, at your own pace."},
+ Spiritual:{LearnStructured:"A structured session on stewardship and integrity at work, with a short action plan.",LearnExperiential:"Apply stewardship and integrity in a real decision at work, then reflect on how it went.",LearnSocial:"Reflective conversations with a mentor about handling trust and responsibility.",LearnSelfDirected:"A personal reflection routine on how you handled trust and responsibility, with an occasional check-in."},
  Organizational:{LearnStructured:"The yearly compulsory learning, scheduled in blocks.",LearnExperiential:"Apply it to a real business case from your own function.",LearnSocial:"Learn with a peer group from another department.",LearnSelfDirected:"Self-paced modules, with a short quiz to check yourself."}
 };
 const SUPPORT_HOW = {
@@ -536,7 +536,7 @@ function renderResults(){
      <ul class="quests wants">${LEARN_ASK[S.learnKey].map(t=>`<li>${t}</li>`).join('')}</ul>
      <h4 class="sub">Watch out for</h4>
      <p class="callout">${LEARN_WATCH[S.learnKey]}</p>`,'dev')}
-   ${panel('rocket','Where to start',`<div id="ideasBody">${ideasHtml()}</div>`,'dev')}
+   ${panel('rocket','For your development plan chat',`<p>Bring this to your conversation with your manager and L&amp;D. It lists the areas you chose, each with a first step that suits how you learn.</p><div id="ideasBody">${ideasHtml()}</div><p class="note"><b>Skill gap</b> means your Learning Passport shows a gap in that area. <b>Your wish</b> means you chose it.</p>`,'dev')}
    ${panel('heart','What would help you most',`<ol class="rank">${S.supportRank.map(k=>`<li>${SUPPORT[k]}</li>`).join('')}</ol>
      <p><b>First choice.</b> ${SUPPORT_HOW[S.supportKey]}</p>${S.supportRank[1]?`<p><b>Second choice.</b> ${SUPPORT_HOW[S.supportRank[1]]}</p>`:''}`,'dev')}
    ${panel('mega','Meet the other characters',`<p class="note">Different ways of contributing. None is better than the others.</p>
